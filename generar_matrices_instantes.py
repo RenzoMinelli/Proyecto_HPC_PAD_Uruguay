@@ -73,8 +73,7 @@ for clave in matrices.keys():
     pd.DataFrame(matrices[clave]).to_csv(ruta_completa, header=None, index=None)
 
 
-# 
+# aplicacion de mascara y todo eso 
+# . . . 
 
-
-    
 

@@ -11,7 +11,6 @@ def train_model(data):
 def save_model(model_fit, filename):
     model_fit.save(filename)
 
-
 directorio_matrices = './matrices_por_medidor/'
 
 # cargo todas las matrices en un dict con clave el nombre del archivo
@@ -29,11 +28,9 @@ modelos = {}
 for clave in matrices.keys():
     print('Procesando clave: ' + clave)
     # obtengo la matriz
-    matriz_original = matrices[clave]
-    # obtengo el bloque
-    bloque = matriz_original[:, :]
+    lista = matrices[clave]
     # entreno el modelo
-    modelo = train_model(bloque)
+    modelo = train_model(lista)
     # guardo el modelo
     modelos[clave] = modelo
 

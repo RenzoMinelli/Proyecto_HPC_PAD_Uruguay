@@ -26,7 +26,7 @@ for archivo in archivos_csv:
 
 # Ahora agarramos las matrices y generamos una matriz para cada bloque 2x2
 
-directorio_matrices_bloque = './matrices_bloque/'
+directorio_matrices_bloque = './matrices_por_bloque/'
 cantidadBloques = 64
 
 for numBloque in range(0, cantidadBloques):

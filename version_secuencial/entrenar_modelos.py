@@ -2,14 +2,30 @@ import numpy as np
 import pandas as pd
 import os
 from statsmodels.tsa.arima.model import ARIMA
+import torch
+import torch.nn as nn
+from LSTM import LSTM
 
-def train_model(data):
-    model = ARIMA(data, order=(5,1,0)) # Los parámetros dependen del análisis de tus datos
-    model_fit = model.fit()
-    return model_fit
+# Definición de la función de entrenamiento
+def train_model(data, model, loss_function, optimizer, epochs):
+    for i in range(epochs):
+        model.hidden_cell = (torch.zeros(1, 1, model.hidden_layer_size),
+                        torch.zeros(1, 1, model.hidden_layer_size))
+
+        optimizer.zero_grad()
+        y_pred = model(data)
+
+        single_loss = loss_function(y_pred, data)
+        single_loss.backward()
+        optimizer.step()
+
+        if i%25 == 1:
+            print(f'epoch: {i:3} loss: {single_loss.item():10.8f}')
+
+    print(f'epoch: {i:3} loss: {single_loss.item():10.10f}')
 
 def save_model(model_fit, filename):
-    model_fit.save(filename)
+    torch.save(model_fit.state_dict(), filename)
 
 directorio_matrices = './matrices_por_medidor/'
 
@@ -28,9 +44,13 @@ modelos = {}
 for clave in matrices.keys():
     print('Procesando clave: ' + clave)
     # obtengo la matriz
-    lista = matrices[clave]
+    lista = torch.FloatTensor(matrices[clave])
+    # define el modelo
+    modelo = LSTM()
+    loss_function = nn.MSELoss()  # Función de pérdida
+    optimizer = torch.optim.Adam(modelo.parameters(), lr=0.001)  # Optimizador
     # entreno el modelo
-    modelo = train_model(lista)
+    train_model(lista, modelo, loss_function, optimizer, epochs=150)
     # guardo el modelo
     modelos[clave] = modelo
 
@@ -42,7 +62,7 @@ for clave in modelos.keys():
     # obtengo el modelo
     modelo = modelos[clave]
     # genero el nombre del archivo
-    nombre_archivo = clave + '.pkl'
+    nombre_archivo = clave + '.pt'
     # guardo el modelo
     save_model(modelo, directorio_modelos + nombre_archivo)
 

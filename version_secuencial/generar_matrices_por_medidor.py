@@ -74,6 +74,15 @@ for archivo in archivos_csv:
             # agrego la matriz al dict con clave el nombre de la columna
             matrices[columna] = matriz
 
+# grafico cada matriz como un mapa de calor
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# for matriz in matrices:
+#     plt.figure(figsize=(10, 10))
+#     sns.heatmap(matrices[matriz], annot=True, fmt=".1f", cmap="YlGnBu")
+#     plt.show()
+
 # Ahora que tenemos las matrices en cada instante, genero un vector para cada medidor
 # Para cada medidor, genero un vector con todos todos los valores que tomo ese medidor en cada instante
 # ordenados por instante de tiempo

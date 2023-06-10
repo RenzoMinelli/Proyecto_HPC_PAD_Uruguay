@@ -3,8 +3,6 @@ import pandas as pd
 import os
 from statsmodels.tsa.arima.model import ARIMA
 
-
-
 def train_model(data):
     model = ARIMA(data, order=(5,1,0)) # Los parámetros dependen del análisis de tus datos
     model_fit = model.fit()

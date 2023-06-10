@@ -7,14 +7,14 @@ from statsmodels.tsa.arima.model import ARIMA
 
 def train_model(data):
     model = ARIMA(data, order=(5,1,0)) # Los parámetros dependen del análisis de tus datos
-    model_fit = model.fit(disp=0)
+    model_fit = model.fit()
     return model_fit
 
 def save_model(model_fit, filename):
     model_fit.save(filename)
 
 
-directorio_matrices = './matrices_por_bloque/'
+directorio_matrices = './matrices_por_medidor/'
 
 # cargo todas las matrices en un dict con clave el nombre del archivo
 matrices = {}

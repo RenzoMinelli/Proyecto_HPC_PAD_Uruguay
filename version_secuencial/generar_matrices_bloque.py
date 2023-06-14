@@ -3,6 +3,8 @@ import numpy as np
 import os
 from math import floor
 
+from config import *
+
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje
 def num_bloque_posiciones_matriz(num):
@@ -45,7 +47,7 @@ def generar_matrices_bloque():
     tamaño_matriz = (16, 16)
 
     # Lugar donde se encuentran tus archivos CSV
-    directorio_csvs = './datos/'
+    directorio_csvs = DIRECTORIO_CSVS_DATOS
 
     archivos_csv = [f for f in os.listdir(directorio_csvs) if f.endswith('.csv')]
 
@@ -90,7 +92,7 @@ def generar_matrices_bloque():
 
     # Ahora agarramos las matrices y generamos una matriz para cada bloque 2x2
 
-    directorio_matrices_bloque = './matrices_por_bloque/'
+    directorio_matrices_bloque = DIRECTORIO_CSVS_MATRICES_GENERADAS
     cantidadMedidores = 16*16
     cantidad_fuera_del_medidor = 1 # (bloques 3 x 3, o sea 1 central más 1 de cada lado)
     # entrenamos un modelo por cada medidor, tomando un vecindario de 3x3 para entrenar los modelos

@@ -5,6 +5,7 @@ from statsmodels.tsa.arima.model import ARIMA
 import torch
 import torch.nn as nn
 from LSTM import LSTM
+from config import * 
 
 ancho_bloque = 9
 
@@ -31,7 +32,7 @@ def save_model(model_fit, filename):
 
 
 def entrenar_modelos_por_bloque():
-    directorio_matrices = './matrices_por_bloque/'
+    directorio_matrices = DIRECTORIO_CSVS_MATRICES_GENERADAS
 
     # cargo todas las matrices en un dict con clave el nombre del archivo
     matrices = {}
@@ -63,7 +64,7 @@ def entrenar_modelos_por_bloque():
         modelos[clave] = modelo
 
     # ahora guardo los modelos en archivos
-    directorio_modelos = './modelos/'
+    directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 
     for clave in modelos.keys():
         print('Procesando clave: ' + clave)

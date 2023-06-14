@@ -7,8 +7,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import time 
 from math import floor 
+from PIL import Image
 
-directorio_modelos = './modelos/'
+from config import *
+
+directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
+
+# Directorio donde se guardarán las imágenes
+directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
+
+
 cantidad_fuera_del_medidor = 1
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 cantidadMedidores = 16*16
@@ -39,7 +47,7 @@ def predecir_por_bloque(steps=5):
     # y luego graficaré un mapa de calor con esa matriz
 
     # cargo los matrices por medidor
-    directorio_matrices = './matrices_por_bloque/'
+    directorio_matrices = DIRECTORIO_CSVS_MATRICES_GENERADAS
     archivos_csv = [f for f in os.listdir(directorio_matrices) if f.endswith('.csv')]
     matrices = {}
     for archivo in archivos_csv:
@@ -48,7 +56,7 @@ def predecir_por_bloque(steps=5):
         df = pd.read_csv(ruta_completa, header=None)
         matrices[archivo[:-4]] = df.values
 
-    for _ in range(steps):
+    for k in range(steps):
         predicciones = np.zeros((16, 16))
         for i in range(16):
             for j in range(16):
@@ -68,9 +76,30 @@ def predecir_por_bloque(steps=5):
                 predicciones[i, j] = prediccion.item()
 
         # ahora voy a graficar un mapa de calor con las predicciones
-        plt.figure(figsize=(10, 10))
-        sns.heatmap(predicciones, annot=True, fmt='.1f', cmap='Blues')
-        plt.show()
+        #plt.figure(figsize=(10, 10))
+        #imagen1 = Image.open("./version_secuencial/auxiliar/Mapa_uruguay.jpg")
+        
+        fig, ax = plt.subplots()
+        sns.heatmap(predicciones,  annot=True,fmt='.1f', cmap='coolwarm', ax=ax ,alpha=0.5)
+        imagen2 = Image.open("./version_secuencial/auxiliar/Mapa_uruguay.jpg")
+        imagen2 = np.array(imagen2)
+        xmin, xmax = ax.get_xlim()
+        ymin, ymax = ax.get_ylim()
+
+        ax.imshow(imagen2, extent=[xmin, xmax, ymin, ymax], alpha=0.5)
+        
+        nombre_imagen = f"imagen_{k}.png"
+
+        ruta_guardado = os.path.join(directorio_guardado, nombre_imagen)
+        plt.savefig(ruta_guardado)
+
+
+            
+        # Limpiar el gráfico para generar la siguiente imagen
+        #plt.savefig
+        #plt.show()       
+        plt.clf()    
+    
 
         fila = np.zeros(ancho_bloque*ancho_bloque + 1)
         fila[0] = time.time()

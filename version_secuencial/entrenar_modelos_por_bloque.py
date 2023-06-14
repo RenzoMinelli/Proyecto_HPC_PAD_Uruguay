@@ -6,6 +6,8 @@ import torch
 import torch.nn as nn
 from LSTM import LSTM
 
+ancho_bloque = 9
+
 # Definición de la función de entrenamiento
 def train_model(data, model, loss_function, optimizer, epochs):
     for i in range(epochs):
@@ -15,6 +17,8 @@ def train_model(data, model, loss_function, optimizer, epochs):
         optimizer.zero_grad()
         y_pred = model(data)
 
+        print('y_pred: ', y_pred)
+        print('data: ', data)
         single_loss = loss_function(y_pred, data)
         single_loss.backward()
         optimizer.step()
@@ -27,46 +31,50 @@ def train_model(data, model, loss_function, optimizer, epochs):
 def save_model(model_fit, filename):
     torch.save(model_fit.state_dict(), filename)
 
-directorio_matrices = './matrices_por_bloque/'
 
-# cargo todas las matrices en un dict con clave el nombre del archivo
-matrices = {}
-archivos_csv = [f for f in os.listdir(directorio_matrices) if f.endswith('.csv')]
-for archivo in archivos_csv:
-    print('Procesando archivo: ' + archivo)
-    ruta_completa = os.path.join(directorio_matrices, archivo)
-    df = pd.read_csv(ruta_completa, header=None)
-    matrices[archivo[:-4]] = df.values
+def entrenar_modelos_por_bloque():
+    directorio_matrices = './matrices_por_bloque/'
 
-# ahora quiero entrenar un modelo para cada bloque
-# voy a guardar los modelos en un dict con clave el nombre del archivo
-modelos = {}
-for clave in matrices.keys():
-    print('Procesando clave: ' + clave)
-    # obtengo la matriz
-    df = pd.DataFrame(matrices[clave]).drop(columns=[0])
+    # cargo todas las matrices en un dict con clave el nombre del archivo
+    matrices = {}
+    archivos_csv = [f for f in os.listdir(directorio_matrices) if f.endswith('.csv')]
+    for archivo in archivos_csv:
+        print('Procesando archivo: ' + archivo)
+        ruta_completa = os.path.join(directorio_matrices, archivo)
+        df = pd.read_csv(ruta_completa, header=None)
+        matrices[archivo[:-4]] = df.values
 
-    lista = df.values.astype(float)
-    bloque = torch.FloatTensor(lista)
+    # ahora quiero entrenar un modelo para cada bloque
+    # voy a guardar los modelos en un dict con clave el nombre del archivo
+    modelos = {}
+    for clave in matrices.keys():
+        print('Procesando clave: ' + clave)
+        # obtengo la matriz
+        df = pd.DataFrame(matrices[clave]).drop(columns=[0])
 
-    # define el modelo
-    modelo = LSTM(4, 100, 4)
-    loss_function = nn.MSELoss()  # Función de pérdida
-    optimizer = torch.optim.Adam(modelo.parameters(), lr=0.001)  # Optimizador
-    # entreno el modelo
-    train_model(bloque, modelo, loss_function, optimizer, epochs=150)
-    # guardo el modelo
-    modelos[clave] = modelo
+        lista = df.values.astype(float)
+        bloque = torch.FloatTensor(lista)
 
-# ahora guardo los modelos en archivos
-directorio_modelos = './modelos/'
+        # define el modelo
+        modelo = LSTM(ancho_bloque, 100, 1)
+        loss_function = nn.MSELoss()  # Función de pérdida
+        optimizer = torch.optim.Adam(modelo.parameters(), lr=0.001)  # Optimizador
+        # entreno el modelo
+        train_model(bloque, modelo, loss_function, optimizer, epochs=150)
+        # guardo el modelo
+        modelos[clave] = modelo
 
-for clave in modelos.keys():
-    print('Procesando clave: ' + clave)
-    # obtengo el modelo
-    modelo = modelos[clave]
-    # genero el nombre del archivo
-    nombre_archivo = clave + '.pt'
-    # guardo el modelo
-    save_model(modelo, directorio_modelos + nombre_archivo)
+    # ahora guardo los modelos en archivos
+    directorio_modelos = './modelos/'
 
+    for clave in modelos.keys():
+        print('Procesando clave: ' + clave)
+        # obtengo el modelo
+        modelo = modelos[clave]
+        # genero el nombre del archivo
+        nombre_archivo = clave + '.pt'
+        # guardo el modelo
+        save_model(modelo, directorio_modelos + nombre_archivo)
+
+if __name__ == "__main__":
+    entrenar_modelos_por_bloque()

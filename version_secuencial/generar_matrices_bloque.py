@@ -89,36 +89,55 @@ for archivo in archivos_csv:
 # Ahora agarramos las matrices y generamos una matriz para cada bloque 2x2
 
 directorio_matrices_bloque = './matrices_por_bloque/'
-cantidadBloques = 64
-
-for numBloque in range(0, cantidadBloques):
+cantidadMedidores = 16*16
+cantidad_fuera_del_medidor = 1 # (bloques 3 x 3, o sea 1 central más 1 de cada lado)
+# entrenamos un modelo por cada medidor, tomando un vecindario de 3x3 para entrenar los modelos
+for numMedidor in range(0, cantidadMedidores):
     # obtengo los indices de la matriz para ese bloque
-    x_desde, x_hasta, y_desde, y_hasta = num_bloque_posiciones_matriz(numBloque)
+    medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
 
+    ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
+
+    # print("Medidor: ", numMedidor, " x: ", medidor_x, " y: ", medidor_y)
     # genero la matriz que voy a guardar al final 5 columnas: tiempo, medicio1, medicion2, medicion3, medicion4
-    matriz = np.zeros((0, 5))
+    matriz = np.zeros((0, ancho_bloque*ancho_bloque + 1))
     
     # obtengo el bloque de cada matriz
     for clave in matrices.keys():
         # print('Procesando clave: ' + clave)
         # obtengo la matriz
         matriz_original = matrices[clave]
-        # obtengo el bloque
-        bloque = matriz_original[x_desde:x_hasta, y_desde:y_hasta]
         
         tiempo = clave
-        medicio1 = bloque[0,0]
-        medicio2 = bloque[0,1]
-        medicio3 = bloque[1,0]
-        medicio4 = bloque[1,1]
+        fila = np.zeros(ancho_bloque*ancho_bloque + 1)
+        fila[0] = tiempo
 
-        # agrego una fila a la matriz [tiempo, medicio1, medicio2, medicio3, medicio4]
-        nueva_fila = np.array([tiempo, medicio1, medicio2, medicio3, medicio4])
+        # print("Fila: ", fila)
+
+        for i in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):
+            for j in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):
+                posMatrizX_orig = i + medidor_x
+                posMatrizY_orig = j + medidor_y
+
+                numMedidorLocalX = i + cantidad_fuera_del_medidor
+                numMedidorLocalY = j + cantidad_fuera_del_medidor
+                numMedidorFila = numMedidorLocalY * ancho_bloque + numMedidorLocalX
+
+                # print("i: ", i, " j: ", j, " posMatrizX_orig: ", posMatrizX_orig, " posMatrizY_orig: ", posMatrizY_orig, " numMedidorLocalX: ", numMedidorLocalX, " numMedidorLocalY: ", numMedidorLocalY, " numMedidorFila: ", numMedidorFila, "\n")
+                # si la posicion esta dentro de la matriz original
+                if posMatrizX_orig >= 0 and posMatrizX_orig < tamaño_matriz[0] and posMatrizY_orig >= 0 and posMatrizY_orig < tamaño_matriz[1]:
+                    # obtengo el valor de la matriz original
+                    valor = matriz_original[posMatrizX_orig, posMatrizY_orig]
+                    # sumo 1 porque en la 0 ponemos el tiempo
+                    fila[numMedidorFila + 1] = valor
+                else:
+                    # si esta fuera de la matriz original, pongo un 0
+                    fila[numMedidorFila + 1] = 0
         
-        matriz = np.vstack((matriz, nueva_fila))
+        matriz = np.vstack((matriz, fila))
 
     # genero el archivo csv
-    print('Generando archivo: ' + str(numBloque))
-    ruta_completa = os.path.join(directorio_matrices_bloque, str(numBloque) + '.csv') 
+    print('Generando archivo de medidor: ' + str(numMedidor))
+    ruta_completa = os.path.join(directorio_matrices_bloque, str(numMedidor) + '.csv') 
     df = pd.DataFrame(matriz)
     df.to_csv(ruta_completa, header=None, index=None)

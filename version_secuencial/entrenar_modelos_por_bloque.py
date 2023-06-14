@@ -17,8 +17,6 @@ def train_model(data, model, loss_function, optimizer, epochs):
         optimizer.zero_grad()
         y_pred = model(data)
 
-        print('y_pred: ', y_pred)
-        print('data: ', data)
         single_loss = loss_function(y_pred, data)
         single_loss.backward()
         optimizer.step()

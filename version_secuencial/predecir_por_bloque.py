@@ -9,7 +9,7 @@ import time
 from math import floor 
 
 directorio_modelos = './modelos/'
-cantidad_fuera_del_medidor = 2
+cantidad_fuera_del_medidor = 1
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 cantidadMedidores = 16*16
 tamaño_matriz = (16,16)
@@ -19,7 +19,7 @@ def convertir_medidor_a_cord(numMedidor):
     return x,y
 
 
-def predecir_por_bloque(steps=1):
+def predecir_por_bloque(steps=5):
     # cargo los modelos en un dict con clave el nombre del archivo
     modelos = {}
     archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.pt')]
@@ -27,7 +27,7 @@ def predecir_por_bloque(steps=1):
         print('Procesando modelo nombre: ' + archivo)
         ruta_completa = os.path.join(directorio_modelos, archivo)
 
-        modelo = LSTM(ancho_bloque, 100, 1)
+        modelo = LSTM(ancho_bloque*ancho_bloque, 100, 1)
         modelo.load_state_dict(torch.load(ruta_completa))
         modelo.eval()
 
@@ -48,7 +48,7 @@ def predecir_por_bloque(steps=1):
         df = pd.read_csv(ruta_completa, header=None)
         matrices[archivo[:-4]] = df.values
 
-    for numPrediccion in range(steps):
+    for _ in range(steps):
         predicciones = np.zeros((16, 16))
         for i in range(16):
             for j in range(16):
@@ -56,7 +56,6 @@ def predecir_por_bloque(steps=1):
                 # obtengo el nombre del archivo
                 clave = str(numMedidor)
                 # obtengo el modelo
-                print("clave: ", clave)
                 modelo = modelos[clave]
                 # hago la prediccion con las ultimas 12 filas de la matriz
                 df = pd.DataFrame(matrices[clave][:,-12:]).drop(columns=[0])

@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import os
-from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 from LSTM import LSTM
 import torch
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 directorio_modelos = './modelos/'
 ancho_bloque = 9
@@ -58,9 +59,6 @@ def predecir_por_bloque():
 
         
     # ahora voy a graficar un mapa de calor con las predicciones
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-
     plt.figure(figsize=(10, 10))
     sns.heatmap(predicciones, annot=True, fmt='.1f', cmap='Blues')
     plt.show()

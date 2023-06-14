@@ -133,7 +133,7 @@ def generar_matrices_bloque():
                         # obtengo el valor de la matriz original
                         valor = matriz_original[posMatrizX_orig, posMatrizY_orig]
                         # sumo 1 porque en la 0 ponemos el tiempo
-                        fila[numMedidorFila + 1] = valor
+                        fila[numMedidorFila + 1] = valor / 100 # divido por 100 para normalizar
                     else:
                         # si esta fuera de la matriz original, pongo un 0
                         fila[numMedidorFila + 1] = 0

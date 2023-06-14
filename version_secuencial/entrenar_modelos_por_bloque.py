@@ -1,35 +1,11 @@
 import numpy as np
 import pandas as pd
 import os
-from statsmodels.tsa.arima.model import ARIMA
-import torch
-import torch.nn as nn
-from LSTM import LSTM
-from config import * 
+from ConvLSTM import create_model
+from config import *
 
-ancho_bloque = 9
-
-# Definición de la función de entrenamiento
-def train_model(data, model, loss_function, optimizer, epochs):
-    for i in range(epochs):
-        model.hidden_cell = (torch.zeros(1, 1, model.hidden_layer_size),
-                        torch.zeros(1, 1, model.hidden_layer_size))
-
-        optimizer.zero_grad()
-        y_pred = model(data)
-
-        single_loss = loss_function(y_pred, data)
-        single_loss.backward()
-        optimizer.step()
-
-        if i%25 == 1:
-            print(f'epoch: {i:3} loss: {single_loss.item():10.8f}')
-
-    print(f'epoch: {i:3} loss: {single_loss.item():10.10f}')
-
-def save_model(model_fit, filename):
-    torch.save(model_fit.state_dict(), filename)
-
+def save_model(model, filename):
+    model.save(filename)
 
 def entrenar_modelos_por_bloque():
     directorio_matrices = DIRECTORIO_CSVS_MATRICES_GENERADAS
@@ -49,17 +25,26 @@ def entrenar_modelos_por_bloque():
     for clave in matrices.keys():
         print('Procesando clave: ' + clave)
         # obtengo la matriz
-        df = pd.DataFrame(matrices[clave]).drop(columns=[0])
+        matriz = matrices[clave]
+        # elimino la primera columna
+        matriz = matriz[:, 1:]
 
-        lista = df.values.astype(float)
-        bloque = torch.FloatTensor(lista)
+        # Cambia la forma de los datos para que sean (muestras, tiempo, filas, columnas, canales)
+        datos = matriz.reshape(-1, 1, 3, 3, 1)
+        
+        # Las etiquetas son los valores centrales de los bloques 3x3 del siguiente paso de tiempo
+        etiquetas = datos[1:, 0, 1, 1, 0]  # Asume que quieres predecir el valor central del bloque siguiente en la secuencia
 
-        # define el modelo
-        modelo = LSTM(ancho_bloque, 100, 1)
-        loss_function = nn.MSELoss()  # Función de pérdida
-        optimizer = torch.optim.Adam(modelo.parameters(), lr=0.001)  # Optimizador
-        # entreno el modelo
-        train_model(bloque, modelo, loss_function, optimizer, epochs=150)
+        # Divide los datos en entrenamiento y prueba
+        train_X = datos[:-101]  # Usa todos los ejemplos menos los últimos 101 para entrenamiento
+        train_y = etiquetas[:-100]  # Usa todas las etiquetas menos las últimas 100 para entrenamiento
+        test_X = datos[-101:-1]  # Usa los últimos 101 ejemplos menos el último para prueba
+        test_y = etiquetas[-100:]  # Usa las últimas 100 etiquetas para prueba
+
+        # Entrena el modelo
+        modelo = create_model(input_shape=(None, 3, 3, 1))
+        modelo.fit(train_X, train_y, epochs=30, validation_data=(test_X, test_y))
+
         # guardo el modelo
         modelos[clave] = modelo
 
@@ -71,7 +56,7 @@ def entrenar_modelos_por_bloque():
         # obtengo el modelo
         modelo = modelos[clave]
         # genero el nombre del archivo
-        nombre_archivo = clave + '.pt'
+        nombre_archivo = clave + '.h5'
         # guardo el modelo
         save_model(modelo, directorio_modelos + nombre_archivo)
 

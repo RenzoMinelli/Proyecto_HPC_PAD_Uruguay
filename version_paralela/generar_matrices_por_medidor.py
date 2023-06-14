@@ -3,6 +3,7 @@ import numpy as np
 import os
 from math import floor
 
+
 # latitud vertical, longitud horizontal
 # dado un par de coordenadas latitud longitud, devuelve la coordenada en la matriz (x e y)
 def convertir_latlong_a_cord(latitud,longitud):

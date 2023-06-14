@@ -4,6 +4,7 @@ import os
 from math import floor
 
 from config import *
+from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje
@@ -44,7 +45,7 @@ def convertir_medidor_a_cord(numMedidor):
 def generar_matrices_bloque():
 
     # Define el tamaño de la matriz
-    tamaño_matriz = (16, 16)
+    tamaño_matriz = TAMAÑO_MATRIZ
 
     # Lugar donde se encuentran tus archivos CSV
     directorio_csvs = DIRECTORIO_CSVS_DATOS
@@ -86,6 +87,9 @@ def generar_matrices_bloque():
                     valor = row[columna]
                     # asigno el valor a la matriz
                     matriz[x,y] = valor
+
+                nombre_matriz = f"imagen_{columna}.csv"
+                guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)
                 
                 # agrego la matriz al dict con clave el nombre de la columna
                 matrices[columna] = matriz

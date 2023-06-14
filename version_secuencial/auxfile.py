@@ -1,6 +1,10 @@
 import pandas as pd
 import numpy as np
 import os
+import csv
+
+
+
 
 filas = {}
 filas['fila00'] = [0]
@@ -31,3 +35,5 @@ for fila in filas:
     matriz[int(fila[-2:])]=filas[fila]
 df = pd.DataFrame(matriz)
 df.to_csv('auxiliar/mascara.csv', header=None, index=None)
+
+

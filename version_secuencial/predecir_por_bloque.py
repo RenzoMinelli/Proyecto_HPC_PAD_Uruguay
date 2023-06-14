@@ -7,6 +7,8 @@ import seaborn as sns
 import time 
 from math import floor 
 from PIL import Image
+from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
+from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
 from keras.models import load_model
 
@@ -18,7 +20,10 @@ directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
 cantidad_fuera_del_medidor = 1
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 cantidadMedidores = 16*16
-tamaño_matriz = (16,16)
+tamaño_matriz = TAMAÑO_MATRIZ
+
+
+
 def convertir_medidor_a_cord(numMedidor):
     y = floor(numMedidor / 16)
     x = numMedidor % 16
@@ -52,6 +57,8 @@ def predecir_por_bloque(steps=1):
         df = pd.read_csv(ruta_completa, header=None)
         matrices[archivo[:-4]] = df.values
 
+    ruta_al_archivo = DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA
+    
     for k in range(steps):
         print("----- Paso: ", k)
         predicciones = np.zeros(tamaño_matriz)
@@ -72,31 +79,14 @@ def predecir_por_bloque(steps=1):
                 # guardo la prediccion
                 predicciones[i, j] = prediccion[0,0]
 
-        # ahora voy a graficar un mapa de calor con las predicciones
-        #plt.figure(figsize=(10, 10))
-        #imagen1 = Image.open("./version_secuencial/auxiliar/Mapa_uruguay.jpg")
-        
-        fig, ax = plt.subplots()
-        sns.heatmap(predicciones,  annot=True,fmt='.1f', cmap='coolwarm', ax=ax ,alpha=0.5)
-        imagen2 = Image.open("./version_secuencial/auxiliar/Mapa_uruguay.jpg")
-        imagen2 = np.array(imagen2)
-        xmin, xmax = ax.get_xlim()
-        ymin, ymax = ax.get_ylim()
+        # Guardar la matriz en un archivo CSV
+        nombre_archivo = f"matriz_prediccion_step{k}.csv"
+        guardar_matriz(predicciones, ruta_al_archivo, nombre_archivo)
 
-        ax.imshow(imagen2, extent=[xmin, xmax, ymin, ymax], alpha=0.5)
-        
+        # ahora voy a graficar un mapa de calor con las predicciones      
         nombre_imagen = f"imagen_{k}.png"
-
-        ruta_guardado = os.path.join(directorio_guardado, nombre_imagen)
-        plt.savefig(ruta_guardado)
-
-
+        crear_heatmap(predicciones,directorio_guardado,nombre_imagen)
             
-        # Limpiar el gráfico para generar la siguiente imagen
-        #plt.savefig
-        #plt.show()       
-        plt.clf()    
-    
 
         fila = np.zeros(ancho_bloque*ancho_bloque + 1)
         fila[0] = time.time()

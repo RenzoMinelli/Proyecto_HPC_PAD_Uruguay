@@ -8,14 +8,13 @@ import seaborn as sns
 import time 
 from math import floor 
 from PIL import Image
-
 from config import *
+from keras.models import load_model
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 
 # Directorio donde se guardarán las imágenes
 directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
-
 
 cantidad_fuera_del_medidor = 1
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
@@ -27,18 +26,16 @@ def convertir_medidor_a_cord(numMedidor):
     return x,y
 
 
-def predecir_por_bloque(steps=5):
+def predecir_por_bloque(steps=1):
     # cargo los modelos en un dict con clave el nombre del archivo
     modelos = {}
-    archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.pt')]
+    archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
+    # archivos_csv = ['0.h5', '1.h5']
     for archivo in archivos_csv:
         print('Procesando modelo nombre: ' + archivo)
         ruta_completa = os.path.join(directorio_modelos, archivo)
 
-        modelo = LSTM(ancho_bloque*ancho_bloque, 100, 1)
-        modelo.load_state_dict(torch.load(ruta_completa))
-        modelo.eval()
-
+        modelo = load_model(ruta_completa)
         modelos[archivo[:-3]] = modelo
 
     print("modelos cargados: ", modelos.keys())
@@ -57,7 +54,8 @@ def predecir_por_bloque(steps=5):
         matrices[archivo[:-4]] = df.values
 
     for k in range(steps):
-        predicciones = np.zeros((16, 16))
+        print("----- Paso: ", k)
+        predicciones = np.zeros(tamaño_matriz)
         for i in range(16):
             for j in range(16):
                 numMedidor = i * 16 + j 
@@ -67,13 +65,13 @@ def predecir_por_bloque(steps=5):
                 modelo = modelos[clave]
                 # hago la prediccion con las ultimas 12 filas de la matriz
                 df = pd.DataFrame(matrices[clave][:,-12:]).drop(columns=[0])
-                lista = df.values.astype(float)
-                bloque = torch.FloatTensor(lista)
+                lista = df.values
+                bloque = lista.reshape(-1, 1, 3, 3, 1)
 
                 # predigo
-                prediccion = modelo(bloque)
+                prediccion = modelo.predict(bloque)
                 # guardo la prediccion
-                predicciones[i, j] = prediccion.item()
+                predicciones[i, j] = prediccion[0,0]
 
         # ahora voy a graficar un mapa de calor con las predicciones
         #plt.figure(figsize=(10, 10))

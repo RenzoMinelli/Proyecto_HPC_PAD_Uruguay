@@ -87,7 +87,7 @@ def generar_matrices_bloque():
                     # obtengo el valor de la columna
                     valor = row[columna]
                     # asigno el valor a la matriz
-                    matriz[x,y] = valor
+                    matriz[y][x] = valor
 
                 nombre_matriz = f"imagen_{columna}.csv"
                 guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)

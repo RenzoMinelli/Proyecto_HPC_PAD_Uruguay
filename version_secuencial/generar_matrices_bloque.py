@@ -40,7 +40,7 @@ def aplicar_mascara_a_matriz(matriz):
                         suma += matriz[i][j+1]
                         cantidad += 1
                     matriz_resultado[i][j] = suma / cantidad
-
+    return matriz_resultado
     
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje

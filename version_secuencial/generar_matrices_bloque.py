@@ -62,8 +62,9 @@ def convertir_latlong_a_cord(latitud,longitud):
     latitud = round(latitud, 2)
     longitud = round(longitud, 2)
 
-    lat_max = -30.4
-    lat_min = -34.67
+    lat_min = -30.33
+    lat_max = -34.7
+    
     long_max = -53.4
     long_min = -58.33
 
@@ -72,7 +73,7 @@ def convertir_latlong_a_cord(latitud,longitud):
 
     y = int((latitud - lat_min) / (lat_max - lat_min) * 14) + 1
     x = int((longitud - long_min) / (long_max - long_min) * 15) 
-    
+
     return x,y
 
 # numero de medidor va desde 0 hasta 255
@@ -128,7 +129,7 @@ def generar_matrices_bloque():
                     # asigno el valor a la matriz
                     matriz[y][x] = valor
 
-                matriz = aplicar_mascara_a_matriz(matriz)
+                # matriz = aplicar_mascara_a_matriz(matriz)
                 nombre_matriz = f"imagen_{columna}.csv"
                 guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)
                 
@@ -206,7 +207,7 @@ def generar_imagenes_matrices_anteriores():
         df = pd.read_csv(directorio_csvs+archivos_csv, header=None)
         crear_heatmap(df,directorio_guardado,nombre_imagen)
         i += 1 
-        print("generadad imagen " , archivos_csv)
+        print("generada imagen " , archivos_csv)
 
 if __name__ == "__main__":
     generar_matrices_bloque()

@@ -2,3 +2,4 @@ generar_matrices_bloque: 16.468321561813354 segundos
 entrenar_modelos_por_bloque: 952.1350834369659 segundos
 predecir_por_bloque: 18.159486293792725 segundos
 producir_video: 0.07898974418640137 segundos
+generar_matrices_bloque: 23.348439693450928 segundos

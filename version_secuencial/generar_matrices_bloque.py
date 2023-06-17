@@ -168,5 +168,5 @@ def generar_imagenes_matrices_anteriores():
         i += 1 
 
 if __name__ == "__main__":
-    #generar_matrices_bloque()
+    generar_matrices_bloque()
     generar_imagenes_matrices_anteriores()

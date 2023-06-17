@@ -26,3 +26,5 @@ def crear_heatmap_de_csv(matriz,ruta,nombre_imagen):
 
     ruta_guardado = os.path.join(ruta, nombre_imagen)
     plt.savefig(ruta_guardado)
+
+    plt.close()

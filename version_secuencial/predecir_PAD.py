@@ -4,6 +4,7 @@ import generar_matrices_bloque as generar
 import entrenar_modelos_por_bloque as entrenar
 import predecir_por_bloque as predecir 
 import producir_video as producir
+import funciones_auxiliares as auxiliar
 import os
 from config import *
 
@@ -22,13 +23,11 @@ def ejecutar_y_registrar(funcion):
 
 if __name__ == "__main__":
 
-    # para cada constante en config.py llamada DIRECTORIO_XXX, crear un directorio con ese nombre
-    print("Creando directorios...")
-    for constante in dir():
-        if constante.startswith("DIRECTORIO_"):
-            os.makedirs(globals()[constante], exist_ok=True)
+    auxiliar.crear_directorios_inicio()
     print("Iniciando generar matrices")
     ejecutar_y_registrar(generar.generar_matrices_bloque)
+    print("Generando imagenes de mediciones")
+    ejecutar_y_registrar(generar.generar_imagenes_matrices_anteriores)
     print("Iniciando entrenar modelos")
     ejecutar_y_registrar(entrenar.entrenar_modelos_por_bloque)
     print("Iniciando predeciccion")

@@ -56,19 +56,23 @@ def num_bloque_posiciones_matriz(num):
 
 # latitud vertical, longitud horizontal
 # dado un par de coordenadas latitud longitud, devuelve la coordenada en la matriz (x e y)
+
 def convertir_latlong_a_cord(latitud,longitud):
 
-    lat_max = -30.3333
-    lat_min = -34.6667
-    long_max = -53.3333
-    long_min = -58.3333
+    latitud = round(latitud, 2)
+    longitud = round(longitud, 2)
+
+    lat_max = -30.4
+    lat_min = -34.67
+    long_max = -53.4
+    long_min = -58.33
 
     # queremos que x sea entero este entre 0 y 15
     # queremos que y sea entero este entre 1 y 14
 
     y = int((latitud - lat_min) / (lat_max - lat_min) * 14) + 1
     x = int((longitud - long_min) / (long_max - long_min) * 15) 
-
+    
     return x,y
 
 # numero de medidor va desde 0 hasta 255

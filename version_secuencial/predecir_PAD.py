@@ -23,6 +23,7 @@ def ejecutar_y_registrar(funcion):
 if __name__ == "__main__":
     
    ejecutar_y_registrar(generar.generar_matrices_bloque)
+   ejecutar_y_registrar(generar.generar_imagenes_matrices_anteriores)
    ejecutar_y_registrar(entrenar.entrenar_modelos_por_bloque)
    ejecutar_y_registrar(predecir.predecir_por_bloque)
    ejecutar_y_registrar(producir.producir_video)

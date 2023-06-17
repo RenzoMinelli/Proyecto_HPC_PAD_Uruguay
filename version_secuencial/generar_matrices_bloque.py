@@ -5,6 +5,7 @@ from math import floor
 
 from config import *
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
+from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje
@@ -151,5 +152,21 @@ def generar_matrices_bloque():
         df.to_csv(ruta_completa, header=None, index=None)
 
 
+def generar_imagenes_matrices_anteriores():
+    
+    directorio_csvs = DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA
+    directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
+
+    i = 0
+    for f in os.listdir(directorio_csvs):
+        archivos_csv = f
+        # ahora voy a graficar un mapa de calor con las predicciones      
+        nombre_imagen = f"imagen_anterior_{i}.png"
+
+        df = pd.read_csv(directorio_csvs+archivos_csv, header=None)
+        crear_heatmap(df,directorio_guardado,nombre_imagen)
+        i += 1 
+
 if __name__ == "__main__":
-    generar_matrices_bloque()
+    #generar_matrices_bloque()
+    generar_imagenes_matrices_anteriores()

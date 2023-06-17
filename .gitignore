@@ -4,3 +4,4 @@ version_secuencial/matrices_por_bloque
 version_secuencial/images
 version_secuencial/matrices_por_bloque_anteriores
 video_salida.mp4
+version_secuencial/__pycache__

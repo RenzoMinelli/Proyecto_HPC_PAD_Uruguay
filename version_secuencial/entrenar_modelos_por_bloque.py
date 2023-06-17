@@ -4,6 +4,8 @@ import os
 from ConvLSTM import create_model
 from config import *
 
+directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
+
 def save_model(model, filename):
     model.save(filename)
 
@@ -21,7 +23,6 @@ def entrenar_modelos_por_bloque():
 
     # ahora quiero entrenar un modelo para cada bloque
     # voy a guardar los modelos en un dict con clave el nombre del archivo
-    modelos = {}
     for clave in matrices.keys():
         print('Procesando clave: ' + clave)
         # obtengo la matriz
@@ -45,20 +46,9 @@ def entrenar_modelos_por_bloque():
         modelo = create_model(input_shape=(None, 3, 3, 1))
         modelo.fit(train_X, train_y, epochs=30, validation_data=(test_X, test_y))
 
-        # guardo el modelo
-        modelos[clave] = modelo
-
-    # ahora guardo los modelos en archivos
-    directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
-
-    for clave in modelos.keys():
-        print('Procesando clave: ' + clave)
-        # obtengo el modelo
-        modelo = modelos[clave]
-        # genero el nombre del archivo
         nombre_archivo = clave + '.h5'
-        # guardo el modelo
         save_model(modelo, directorio_modelos + nombre_archivo)
+
 
 if __name__ == "__main__":
     entrenar_modelos_por_bloque()

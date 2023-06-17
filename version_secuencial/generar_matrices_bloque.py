@@ -7,6 +7,41 @@ from config import *
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 
+def aplicar_mascara_a_matriz(matriz):
+    # cargamos mascara matriz desde auxiliar/mascara.csv
+    ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+    df = pd.read_csv(ruta_completa, header=None)
+    mascara = df.values
+    matriz_resultado = np.zeros(TAMAÑO_MATRIZ)
+
+    # revisamos para las posiciones de la mascara, si hay un 1
+    # vemos en la matriz, si hay valor dejamos ese valor, sino ponemos un promedio de los 4 valores de alrededor
+
+    for i in range(0, TAMAÑO_MATRIZ[0]):    
+        for j in range(0, TAMAÑO_MATRIZ[1]):
+            if mascara[i][j] == 1:
+                if matriz[i][j] != 0:
+                    matriz_resultado[i][j] = matriz[i][j]
+                else:
+                    print("La posicion ", i, j, " tiene valor 0. Calculando promedio")
+                    # promedio de los 4 valores de alrededor
+                    suma = 0
+                    cantidad = 0
+                    if i > 0:
+                        suma += matriz[i-1][j]
+                        cantidad += 1
+                    if i < TAMAÑO_MATRIZ[0] - 1:
+                        suma += matriz[i+1][j]
+                        cantidad += 1
+                    if j > 0:
+                        suma += matriz[i][j-1]
+                        cantidad += 1
+                    if j < TAMAÑO_MATRIZ[1] - 1:
+                        suma += matriz[i][j+1]
+                        cantidad += 1
+                    matriz_resultado[i][j] = suma / cantidad
+    return matriz_resultado
+    
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje
 def num_bloque_posiciones_matriz(num):
@@ -89,6 +124,7 @@ def generar_matrices_bloque():
                     # asigno el valor a la matriz
                     matriz[y][x] = valor
 
+                matriz = aplicar_mascara_a_matriz(matriz)
                 nombre_matriz = f"imagen_{columna}.csv"
                 guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)
                 

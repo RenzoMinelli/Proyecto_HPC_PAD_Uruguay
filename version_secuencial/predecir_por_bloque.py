@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd
 import os
-import torch
-import matplotlib.pyplot as plt
-import seaborn as sns
 import time 
 from math import floor 
-from PIL import Image
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *

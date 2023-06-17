@@ -4,13 +4,13 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pandas as pd
 
 
 def guardar_matriz_como_csv(matriz, ruta, nombre_archivo):
-    with open(ruta+nombre_archivo, "w", newline="") as archivo_csv:
-        escritor_csv = csv.writer(archivo_csv)
-        for fila in matriz:
-            escritor_csv.writerow(fila)
+    ruta_completa = os.path.join(ruta, nombre_archivo) 
+    df = pd.DataFrame(matriz)
+    df.to_csv(ruta_completa, header=None, index=None)
 
 def crear_heatmap_de_csv(matriz,ruta,nombre_imagen):
     fig, ax = plt.subplots()

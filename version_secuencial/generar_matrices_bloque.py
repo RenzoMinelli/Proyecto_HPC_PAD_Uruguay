@@ -161,11 +161,12 @@ def generar_imagenes_matrices_anteriores():
     for f in os.listdir(directorio_csvs):
         archivos_csv = f
         # ahora voy a graficar un mapa de calor con las predicciones      
-        nombre_imagen = f"imagen_anterior_{i}.png"
+        nombre_imagen = f"imagen_{archivos_csv}.png"
 
         df = pd.read_csv(directorio_csvs+archivos_csv, header=None)
         crear_heatmap(df,directorio_guardado,nombre_imagen)
         i += 1 
+        print("generadad imagen " , archivos_csv)
 
 if __name__ == "__main__":
     generar_matrices_bloque()

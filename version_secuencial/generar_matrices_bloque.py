@@ -177,7 +177,7 @@ def generar_matrices_bloque():
                     # si la posicion esta dentro de la matriz original
                     if posMatrizX_orig >= 0 and posMatrizX_orig < tamaño_matriz[0] and posMatrizY_orig >= 0 and posMatrizY_orig < tamaño_matriz[1]:
                         # obtengo el valor de la matriz original
-                        valor = matriz_original[posMatrizX_orig, posMatrizY_orig]
+                        valor = matriz_original[posMatrizY_orig][posMatrizX_orig]
                         # sumo 1 porque en la 0 ponemos el tiempo
                         fila[numMedidorFila + 1] = valor / 100 # divido por 100 para normalizar
                     else:

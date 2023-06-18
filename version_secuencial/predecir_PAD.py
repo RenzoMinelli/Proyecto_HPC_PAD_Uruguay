@@ -31,7 +31,7 @@ if __name__ == "__main__":
     print("Iniciando entrenar modelos")
     ejecutar_y_registrar(entrenar.entrenar_modelos_por_bloque)
     print("Iniciando predeciccion")
-    ejecutar_y_registrar(predecir.predecir_por_bloque)
+    ejecutar_y_registrar(predecir.predecir_por_bloque(5))
     print("Iniciando producir video")
     ejecutar_y_registrar(producir.producir_video)
 

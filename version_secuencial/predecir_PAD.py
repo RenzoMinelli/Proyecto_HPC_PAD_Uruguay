@@ -23,7 +23,7 @@ def ejecutar_y_registrar(funcion):
 
 if __name__ == "__main__":
 
-    auxiliar.crear_directorios_inicio()
+    auxiliar.iniciar_ambiente()
     print("Iniciando generar matrices")
     ejecutar_y_registrar(generar.generar_matrices_bloque)
     print("Generando imagenes de mediciones")

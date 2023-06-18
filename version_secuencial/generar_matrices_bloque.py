@@ -130,7 +130,7 @@ def generar_matrices_bloque():
                     matriz[y][x] = valor
 
                 # matriz = aplicar_mascara_a_matriz(matriz)
-                nombre_matriz = f"imagen_{columna}.csv"
+                nombre_matriz = f"{columna}.csv"
                 guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)
                 
                 # agrego la matriz al dict con clave el nombre de la columna
@@ -200,12 +200,15 @@ def generar_imagenes_matrices_anteriores():
 
     i = 0
     for f in os.listdir(directorio_csvs):
+        # sacar el .csv del nombre
         archivos_csv = f
+        titulo = f[:-4]
+
         # ahora voy a graficar un mapa de calor con las predicciones      
-        nombre_imagen = f"imagen_{archivos_csv}.png"
+        nombre_imagen = f"imagen_{titulo}.png"
 
         df = pd.read_csv(directorio_csvs+archivos_csv, header=None)
-        crear_heatmap(df,directorio_guardado,nombre_imagen)
+        crear_heatmap(df,directorio_guardado,nombre_imagen,titulo)
         i += 1 
         print("generada imagen " , archivos_csv)
 

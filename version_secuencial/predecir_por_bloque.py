@@ -76,12 +76,12 @@ def predecir_por_bloque(steps=1):
                 predicciones[i, j] = prediccion[0,0]
 
         # Guardar la matriz en un archivo CSV
-        nombre_archivo = f"matriz_prediccion_step{k}.csv"
+        nombre_archivo = f"matriz_prediccion_step_{k}.csv"
         guardar_matriz(predicciones, ruta_al_archivo, nombre_archivo)
 
         # ahora voy a graficar un mapa de calor con las predicciones      
         nombre_imagen = f"imagen_{k}.png"
-        crear_heatmap(predicciones,directorio_guardado,nombre_imagen)
+        crear_heatmap(predicciones,directorio_guardado,nombre_imagen, "Prediccion Step " + str(k))
             
 
         fila = np.zeros(ancho_bloque*ancho_bloque + 1)

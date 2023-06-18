@@ -1,8 +1,6 @@
 from keras.models import Sequential
-from keras.layers import Conv3D
-from keras.layers import ConvLSTM2D, BatchNormalization
+from keras.layers import ConvLSTM2D, BatchNormalization, Flatten, Dense
 from keras.optimizers import Adam
-from keras.layers import Flatten
 
 def create_model(input_shape=(None, 3, 3, 1)):
     model = Sequential()
@@ -16,13 +14,12 @@ def create_model(input_shape=(None, 3, 3, 1)):
                padding='same', return_sequences=True))
     model.add(BatchNormalization())
 
-    model.add(Conv3D(filters=3, kernel_size=(3, 3, 3),
-               activation='relu',
-               padding='same', data_format='channels_last'))
-
-    # Añadir una capa Flatten
+    # Añade una capa Flatten para convertir la salida multidimensional de las capas ConvLSTM2D en un vector 1D.
     model.add(Flatten())
 
+    # Añade una capa Dense con 1 neurona y función de activación lineal para predecir un solo valor flotante.
+    model.add(Dense(1, activation='linear'))
+
     model.compile(loss='mse', optimizer=Adam(learning_rate=0.001))
-    
+
     return model

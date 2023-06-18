@@ -105,7 +105,7 @@ def predecir_por_bloque(steps=1):
                     # si la posicion esta dentro de la matriz original
                     if posMatrizX_orig >= 0 and posMatrizX_orig < tamaño_matriz[0] and posMatrizY_orig >= 0 and posMatrizY_orig < tamaño_matriz[1]:
                         # obtengo el valor de la matriz original
-                        valor = predicciones[posMatrizX_orig, posMatrizY_orig]
+                        valor = predicciones[posMatrizY_orig][posMatrizX_orig]
                         # sumo 1 porque en la 0 ponemos el tiempo
                         fila[numMedidorFila + 1] = valor
                     else:

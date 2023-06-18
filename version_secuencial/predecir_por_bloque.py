@@ -26,7 +26,7 @@ def convertir_medidor_a_cord(numMedidor):
     return x,y
 
 
-def predecir_por_bloque(steps=1):
+def predecir_por_bloque(steps=5):
     # cargo los modelos en un dict con clave el nombre del archivo
     modelos = {}
     archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
@@ -80,7 +80,7 @@ def predecir_por_bloque(steps=1):
         guardar_matriz(predicciones, ruta_al_archivo, nombre_archivo)
 
         # ahora voy a graficar un mapa de calor con las predicciones      
-        nombre_imagen = f"imagen_{k}.png"
+        nombre_imagen = f"imagen_prediccion_step_{k}.png"
         crear_heatmap(predicciones,directorio_guardado,nombre_imagen, "Prediccion Step " + str(k))
             
 

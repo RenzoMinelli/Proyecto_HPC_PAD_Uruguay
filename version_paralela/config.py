@@ -9,3 +9,4 @@ ARCHIVO_TIEMPO_SECUENCIAL = './version_paralela/registro_tiempo.txt'
 TAMAÑO_MATRIZ = (16, 16)
 
 NUMERO_DE_PROCESOS = 15
+PASOS_PREDICCION = 5

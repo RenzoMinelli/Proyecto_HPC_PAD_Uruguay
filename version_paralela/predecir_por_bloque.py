@@ -50,7 +50,8 @@ def procesar_modelos(archivos_modelos, cola_res):
         prediccion = modelo.predict(bloque)[0,0]
         cola_res.put((num_modelo, prediccion))
 
-def predecir_por_bloque(steps=5):
+def predecir_por_bloque():
+    steps = PASOS_PREDICCION
     archivos_modelos = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
     
     cantidad_modelos = len(archivos_modelos)

@@ -14,7 +14,6 @@ def entrenar_modelos_por_bloque():
     directorio_matrices = DIRECTORIO_CSVS_MATRICES_GENERADAS
 
     # cargo todas las matrices en un dict con clave el nombre del archivo
-    matrices = {}
     archivos_csv = [f for f in os.listdir(directorio_matrices) if f.endswith('.csv')]
     cantidad_archivos = len(archivos_csv)
     cantidad_archivos_por_proceso = int(cantidad_archivos / NUMERO_DE_PROCESOS)
@@ -23,13 +22,13 @@ def entrenar_modelos_por_bloque():
         primer_archivo = nro_proceso * cantidad_archivos_por_proceso
         ultimo_archivo = min(primer_archivo + cantidad_archivos_por_proceso,cantidad_archivos)
         archivos = archivos_csv[primer_archivo:ultimo_archivo]
-        procesos.append(mp.Process(target=entrenar_modelo, args=(archivos,)))
+        procesos.append(mp.Process(target=procesar_archivos, args=(archivos,)))
 
     for p in procesos:
         p.start()
 
 
-def entrenar_modelo(archivos):
+def procesar_archivos(archivos):
 
     process = mp.current_process()
     pid = process.pid

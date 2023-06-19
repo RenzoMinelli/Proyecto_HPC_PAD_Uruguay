@@ -7,3 +7,5 @@ DIRECTORIO_IMAGENES_GENERADADS = './version_secuencial/images/'
 DIRECTORIO_AUXILIAR = './version_secuencial/auxiliar/'
 ARCHIVO_TIEMPO_SECUENCIAL = './version_secuencial/registro_tiempo.txt'
 TAMAÑO_MATRIZ = (16, 16)
+
+NUMERO_DE_PROCESOS = 15

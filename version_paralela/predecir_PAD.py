@@ -27,7 +27,7 @@ if __name__ == "__main__":
     print("Iniciando generar matrices")
     ejecutar_y_registrar(generar.generar_matrices_bloque)
     print("Generando imagenes de mediciones")
-    #ejecutar_y_registrar(generar.generar_imagenes_matrices_anteriores)
+    ejecutar_y_registrar(generar.generar_imagenes_matrices_anteriores)
     print("Iniciando entrenar modelos")
     ejecutar_y_registrar(entrenar.entrenar_modelos_por_bloque)
     print("Iniciando predeciccion")

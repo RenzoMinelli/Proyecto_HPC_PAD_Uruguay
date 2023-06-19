@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 from math import floor
+import multiprocessing as mp
 
 from config import *
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
@@ -194,22 +195,32 @@ def generar_matrices_bloque():
 
 
 def generar_imagenes_matrices_anteriores():
-    
     directorio_csvs = DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA
-    directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
+    archivos = [f for f in os.listdir(directorio_csvs) if f.endswith('.csv')]
+    cantidad_archivos = len(archivos)
+    cantidad_archivos_por_proceso = int(cantidad_archivos / NUMERO_DE_PROCESOS)
+    procesos = []
+    for nro_proceso in range(NUMERO_DE_PROCESOS):
+        primer_archivo = nro_proceso * cantidad_archivos_por_proceso
+        ultimo_archivo = min(primer_archivo + cantidad_archivos_por_proceso,cantidad_archivos)
+        archivos_local = archivos[primer_archivo:ultimo_archivo]
+        procesos.append(mp.Process(target=generar_imagenes_de_archivos, args=(archivos_local,)))
 
-    i = 0
-    for f in os.listdir(directorio_csvs):
-        # sacar el .csv del nombre
-        archivos_csv = f
-        titulo = f[:-4]
+    for proceso in procesos:
+        proceso.start()
 
+    for proceso in procesos:
+        proceso.join()
+        
+def generar_imagenes_de_archivos(archivos):
+    for archivo in archivos:
+        archivos_csv = archivo
+        titulo = archivo[:-4]
         # ahora voy a graficar un mapa de calor con las predicciones      
         nombre_imagen = f"imagen_{titulo}.png"
 
-        df = pd.read_csv(directorio_csvs+archivos_csv, header=None)
-        crear_heatmap(df,directorio_guardado,nombre_imagen,titulo)
-        i += 1 
+        df = pd.read_csv(DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA+archivos_csv, header=None)
+        crear_heatmap(df,DIRECTORIO_IMAGENES_GENERADADS,nombre_imagen,titulo)
         print("generada imagen " , archivos_csv)
 
 if __name__ == "__main__":

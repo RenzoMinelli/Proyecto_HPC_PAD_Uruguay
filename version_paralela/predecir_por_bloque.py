@@ -73,6 +73,9 @@ def predecir_por_bloque():
         for proceso in procesos:
             proceso.start()
 
+        for proceso in procesos:
+            proceso.join()
+
         predicciones = np.zeros(tamaño_matriz)
 
         for _ in range(cantidad_modelos):

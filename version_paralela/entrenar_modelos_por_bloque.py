@@ -27,6 +27,8 @@ def entrenar_modelos_por_bloque():
     for p in procesos:
         p.start()
 
+    for proceso in procesos:
+        proceso.join()
 
 def procesar_archivos(archivos):
 

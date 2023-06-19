@@ -15,8 +15,8 @@ def guardar_matriz_como_csv(matriz, ruta, nombre_archivo):
 
 def crear_heatmap_de_csv(matriz,ruta,nombre_imagen, titulo=""):
     fig, ax = plt.subplots()
-    sns.heatmap(matriz, cmap='coolwarm',ax=ax ,alpha=0.5, vmin=0, vmax=100)
-    imagen2 = Image.open("./version_secuencial/auxiliar/Mapa_uruguay.jpg")
+    sns.heatmap(matriz, cmap='coolwarm',ax=ax ,alpha=0.5, vmin=0, vmax=1)
+    imagen2 = Image.open(f"{DIRECTORIO_AUXILIAR}Mapa_uruguay.jpg")
     imagen2 = np.array(imagen2)
     xmin, xmax = ax.get_xlim()
     ymin, ymax = ax.get_ylim()

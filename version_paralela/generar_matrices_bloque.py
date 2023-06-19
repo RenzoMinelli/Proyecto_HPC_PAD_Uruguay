@@ -127,7 +127,7 @@ def generar_matrices_bloque():
                     # obtengo el valor de la columna
                     valor = row[columna]
                     # asigno el valor a la matriz
-                    matriz[y][x] = valor
+                    matriz[y][x] = valor/100
 
                 # matriz = aplicar_mascara_a_matriz(matriz)
                 nombre_matriz = f"{columna}.csv"

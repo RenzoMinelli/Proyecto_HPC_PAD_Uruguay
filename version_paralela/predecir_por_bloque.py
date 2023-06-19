@@ -56,13 +56,14 @@ def predecir_por_bloque():
     
     cantidad_modelos = len(archivos_modelos)
     cantidad_modelos_por_proceso = int(cantidad_modelos / NUMERO_DE_PROCESOS)
-    procesos = []
+    
     ruta_al_archivo = DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA
 
     for k in range(steps):
 
         cola_res = mp.Queue()
-        
+        procesos = []
+
         for nro_proceso in range(NUMERO_DE_PROCESOS):
             primer_modelo = nro_proceso * cantidad_modelos_por_proceso
             ultimo_modelo = min(primer_modelo + cantidad_modelos_por_proceso,cantidad_modelos)
@@ -90,7 +91,7 @@ def predecir_por_bloque():
         fila = np.zeros(ancho_bloque*ancho_bloque + 1)
         fila[0] = time.time()
 
-        # print("Fila: ", fila)
+        print("AGREGANDO NUEVA FILA A CSV")
         for numMedidor in range(0, cantidadMedidores):
             # obtengo los indices de la matriz para ese bloque
             medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
@@ -118,11 +119,11 @@ def predecir_por_bloque():
             # agrego la fila a la matriz del medidor numMedidor
             clave = str(numMedidor)
             # leemos el archivo calve.csv y le armamos la fila
-            ruta_completa = os.path.join(directorio_modelos, clave + '.csv')
+            ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, clave + '.csv')
             df = pd.read_csv(ruta_completa, header=None)
 
             nueva_fila = pd.DataFrame(fila.reshape(-1, len(fila)))
-            df = df.append(nueva_fila, ignore_index=True)
+            df = pd.concat([df, nueva_fila], ignore_index=True)
             df.to_csv(ruta_completa, header=None, index=False)
 
 if __name__ == "__main__":

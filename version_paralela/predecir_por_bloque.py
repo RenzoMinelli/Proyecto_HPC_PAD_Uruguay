@@ -44,10 +44,10 @@ def procesar_modelos(archivos_modelos, cola_res):
 
         df = pd.DataFrame(matriz[-12:,:]).drop(columns=[0])
         lista = df.values
-        bloque = lista.reshape(-1, 1, 3, 3, 1)
-
+        bloque = lista.reshape(1, -1, 3, 3, 1)
         # predigo
-        prediccion = modelo.predict(bloque)[0,0]
+        prediccion = modelo.predict(bloque)
+        prediccion = prediccion[0,0]
         cola_res.put((num_modelo, prediccion))
 
 def predecir_por_bloque():

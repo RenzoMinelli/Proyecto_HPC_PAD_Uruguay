@@ -16,8 +16,6 @@ def create_model(input_shape=(None, 3, 3, 1)):
 
     model.add(Flatten())
 
-    model.add(Dense(1, activation='linear'))
-
     model.compile(loss='mse', optimizer=Adam(learning_rate=0.001))
 
     return model

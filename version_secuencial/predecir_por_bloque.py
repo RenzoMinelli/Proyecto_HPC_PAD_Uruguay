@@ -66,7 +66,7 @@ def predecir_por_bloque(steps=5):
                 # obtengo el modelo
                 modelo = modelos[clave]
                 # hago la prediccion con las ultimas 12 filas de la matriz
-                df = pd.DataFrame(matrices[clave][:,-12:]).drop(columns=[0])
+                df = pd.DataFrame(matrices[clave][-12:,:]).drop(columns=[0])
                 lista = df.values
                 bloque = lista.reshape(-1, 1, 3, 3, 1)
 

@@ -132,7 +132,7 @@ def generar_matrices_bloque():
 
                 # matriz = aplicar_mascara_a_matriz(matriz)
                 nombre_matriz = f"{columna}.csv"
-                guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA,nombre_matriz)
+                guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES,nombre_matriz)
                 
                 # agrego la matriz al dict con clave el nombre de la columna
                 matrices[columna] = matriz
@@ -225,4 +225,4 @@ def generar_imagenes_de_archivos(archivos):
 
 if __name__ == "__main__":
     generar_matrices_bloque()
-    generar_imagenes_matrices_anteriores()
+    #generar_imagenes_matrices_anteriores()

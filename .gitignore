@@ -1,0 +1,17 @@
+version_secuencial/modelos
+version_secuencial/matrices_por_medidor
+version_secuencial/matrices_por_bloque
+version_secuencial/images
+version_secuencial/matrices_por_fecha_anteriores
+version_secuencial/__pycache__
+version_secuencial/registro_tiempo.txt
+
+version_paralela/modelos
+version_paralela/matrices_por_medidor
+version_paralela/matrices_por_bloque
+version_paralela/images
+version_paralela/matrices_por_fecha_anteriores
+version_paralela/__pycache__
+version_paralela/registro_tiempo.txt
+version_paralela/VALORES_PRUEBA
+video_salida.mp4

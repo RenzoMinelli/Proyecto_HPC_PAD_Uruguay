@@ -57,7 +57,7 @@ def predecir_por_bloque():
     cantidad_modelos = len(archivos_modelos)
     cantidad_modelos_por_proceso = int(cantidad_modelos / NUMERO_DE_PROCESOS)
     
-    ruta_al_archivo = DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA
+    ruta_al_archivo = DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES
 
     for k in range(steps):
 

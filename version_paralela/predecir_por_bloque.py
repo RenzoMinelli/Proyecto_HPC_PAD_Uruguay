@@ -42,9 +42,9 @@ def procesar_modelos(archivos_modelos, cola_res):
         df = pd.read_csv(ruta_completa_matriz, header=None)
         matriz = df.values
 
-        df = pd.DataFrame(matriz[-12:,:]).drop(columns=[0])
+        df = pd.DataFrame(matriz[-1:,:]).drop(columns=[0])
         lista = df.values
-        bloque = lista.reshape(1, -1, 3, 3, 1)
+        bloque = lista.reshape(1, 9)
         # predigo
         prediccion = modelo.predict(bloque)
         prediccion = prediccion[0,0]

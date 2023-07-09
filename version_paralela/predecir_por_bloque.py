@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import time 
-from math import floor 
+from math import floor, ceil
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
@@ -50,13 +50,27 @@ def procesar_modelos(archivos_modelos, cola_res):
         prediccion = prediccion[0,0]
         cola_res.put((num_modelo, prediccion))
 
+mascara_cargada = None
+def coordenada_en_mascara(x,y):
+    global mascara_cargada
+    # cargamos mascara matriz desde auxiliar/mascara.csv
+    if mascara_cargada is None:
+        ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+        df = pd.read_csv(ruta_completa, header=None)
+        mascara_cargada = df.values
+    mascara = mascara_cargada
+    return mascara[y][x] == 1
+
 def predecir_por_bloque():
     steps = PASOS_PREDICCION
     archivos_modelos = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
     
     cantidad_modelos = len(archivos_modelos)
-    cantidad_modelos_por_proceso = int(cantidad_modelos / NUMERO_DE_PROCESOS)
+    cantidad_modelos_por_proceso = ceil(cantidad_modelos / NUMERO_DE_PROCESOS)
     
+    print(f"Se van a procesar {cantidad_modelos} modelos en {NUMERO_DE_PROCESOS} procesos")
+    print(f"Cada proceso procesará {cantidad_modelos_por_proceso} modelos")
+
     ruta_al_archivo = DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES
 
     for k in range(steps):
@@ -95,6 +109,8 @@ def predecir_por_bloque():
         for numMedidor in range(0, cantidadMedidores):
             # obtengo los indices de la matriz para ese bloque
             medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
+            if not coordenada_en_mascara(medidor_x, medidor_y):
+                continue
 
             for i in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):
                 for j in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):

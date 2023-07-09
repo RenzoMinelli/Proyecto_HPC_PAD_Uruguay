@@ -37,10 +37,6 @@ def procesar_archivos(archivos):
     pid = process.pid
 
     for archivo in archivos:
-
-        if archivo == '99.csv':
-            print("ACAAAAAAA")
-
         print('Proceso: ',pid, ' Procesando archivo: ' + archivo)
         ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, archivo)
         df = pd.read_csv(ruta_completa, header=None)
@@ -63,6 +59,7 @@ def procesar_archivos(archivos):
 
         nombre_archivo = clave + '.h5'
         save_model(modelo, directorio_modelos + nombre_archivo)
+        
 
 if __name__ == "__main__":
     entrenar_modelos_por_bloque()

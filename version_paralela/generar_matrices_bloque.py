@@ -211,6 +211,7 @@ def generar_matrices_bloque():
         print('Generando archivo de medidor: ' + str(numMedidor))
         ruta_completa = os.path.join(directorio_matrices_bloque, str(numMedidor) + '.csv') 
         df = pd.DataFrame(matriz)
+        df = df.sort_values(by=[0])
         df.to_csv(ruta_completa, header=None, index=None)
 
 

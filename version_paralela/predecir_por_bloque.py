@@ -35,7 +35,7 @@ def procesar_modelos(archivos_modelos, cola_res):
         print(f"Proceso {pid} procesando {archivo}")
 
         ruta_completa = os.path.join(directorio_modelos, archivo)
-        num_modelo = archivo[:-3]
+        num_modelo = archivo[:-6]
         modelo = load_model(ruta_completa)
 
         ruta_completa_matriz = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, num_modelo + '.csv')
@@ -63,7 +63,7 @@ def coordenada_en_mascara(x,y):
 
 def predecir_por_bloque():
     steps = PASOS_PREDICCION
-    archivos_modelos = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
+    archivos_modelos = [f for f in os.listdir(directorio_modelos) if f.endswith('.keras')]
     
     cantidad_modelos = len(archivos_modelos)
     cantidad_modelos_por_proceso = ceil(cantidad_modelos / NUMERO_DE_PROCESOS)
@@ -94,12 +94,23 @@ def predecir_por_bloque():
             x,y = convertir_medidor_a_cord(int(num_medidor))
             predicciones[y,x] = prediccion
 
+        print(f"Predicciones para step {k} listas")
+        aux = ""
+        if k < 10:
+            print("Agregando 0")
+            aux = "0" + str(k)
+        else:
+            print("No agrego 0")
+            aux = str(k)
+
         # Guardar la matriz en un archivo CSV
-        nombre_archivo = f"matriz_prediccion_step_{k}.csv"
+        nombre_archivo = f"matriz_prediccion_step_{aux}.csv"
+        print(f"Guardando matriz en {nombre_archivo}")
+
         guardar_matriz(predicciones, ruta_al_archivo, nombre_archivo)
 
         # ahora voy a graficar un mapa de calor con las predicciones      
-        nombre_imagen = f"imagen_prediccion_step_{k}.png"
+        nombre_imagen = f"imagen_prediccion_step_{aux}.png"
         crear_heatmap(predicciones,directorio_guardado,nombre_imagen, "Prediccion Step " + str(k))
 
         fila = np.zeros(ancho_bloque*ancho_bloque + 1)

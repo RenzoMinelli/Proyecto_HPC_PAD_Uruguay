@@ -57,7 +57,7 @@ def procesar_archivos(archivos):
         modelo = create_model(input_shape=(None, 9))
         modelo.fit(train_X, train_y, epochs=80, validation_data=(test_X, test_y))
 
-        nombre_archivo = clave + '.h5'
+        nombre_archivo = clave + '.keras'
         save_model(modelo, directorio_modelos + nombre_archivo)
         
 

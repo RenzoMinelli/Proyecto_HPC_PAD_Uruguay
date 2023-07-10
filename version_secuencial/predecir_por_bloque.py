@@ -29,14 +29,14 @@ def convertir_medidor_a_cord(numMedidor):
 def predecir_por_bloque(steps=5):
     # cargo los modelos en un dict con clave el nombre del archivo
     modelos = {}
-    archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.h5')]
-    # archivos_csv = ['0.h5', '1.h5']
+    archivos_csv = [f for f in os.listdir(directorio_modelos) if f.endswith('.keras')]
+    # archivos_csv = ['0.keras', '1.keras']
     for archivo in archivos_csv:
         print('Procesando modelo nombre: ' + archivo)
         ruta_completa = os.path.join(directorio_modelos, archivo)
 
         modelo = load_model(ruta_completa)
-        modelos[archivo[:-3]] = modelo
+        modelos[archivo[:-6]] = modelo
 
     print("modelos cargados: ", modelos.keys())
     # ahora voy a predecir el siguiente valor para cada medidor
@@ -79,8 +79,15 @@ def predecir_por_bloque(steps=5):
         nombre_archivo = f"matriz_prediccion_step_{k}.csv"
         guardar_matriz(predicciones, ruta_al_archivo, nombre_archivo)
 
-        # ahora voy a graficar un mapa de calor con las predicciones      
-        nombre_imagen = f"imagen_prediccion_step_{k}.png"
+        # ahora voy a graficar un mapa de calor con las predicciones  
+        # si k tiene una cifra le ponemos un 0 antes
+        aux = ""
+        if k < 10:
+            aux = "0" + str(k)
+        else:
+            aux = str(k)
+
+        nombre_imagen = f"imagen_prediccion_step_{aux}.png"
         crear_heatmap(predicciones,directorio_guardado,nombre_imagen, "Prediccion Step " + str(k))
             
 

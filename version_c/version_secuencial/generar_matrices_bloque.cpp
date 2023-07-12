@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <filesystem>
 
 void saveMatrixAsCSV(const arma::mat& matrix, const std::string& filename)
 {
@@ -71,4 +72,11 @@ void convertir_medidor_a_cord(int numMedidor, int* ret){
     int x = numMedidor % 16;
     ret[0] = x;
     ret[1] = y;
+}
+
+void generar_matrices_bloque(){
+    int tamaño_matriz_x = 16;
+    int tamaño_matriz_y = 16;
+
+    string directorio_csvs = "";
 }

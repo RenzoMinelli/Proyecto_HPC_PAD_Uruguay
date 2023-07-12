@@ -7,11 +7,17 @@ from config import *
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 
+mascara_cargada = None
+
 def aplicar_mascara_a_matriz(matriz):
-    # cargamos mascara matriz desde auxiliar/mascara.csv
-    ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
-    df = pd.read_csv(ruta_completa, header=None)
-    mascara = df.values
+    global mascara_cargada
+
+    if mascara_cargada is None:
+        ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+        df = pd.read_csv(ruta_completa, header=None)
+        mascara_cargada = df.values
+    mascara = mascara_cargada
+
     matriz_resultado = np.zeros(TAMAÑO_MATRIZ)
 
     # revisamos para las posiciones de la mascara, si hay un 1
@@ -41,7 +47,17 @@ def aplicar_mascara_a_matriz(matriz):
                         cantidad += 1
                     matriz_resultado[i][j] = suma / cantidad
     return matriz_resultado
-    
+
+def coordenada_en_mascara(x,y):
+    global mascara_cargada
+    # cargamos mascara matriz desde auxiliar/mascara.csv
+    if mascara_cargada is None:
+        ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+        df = pd.read_csv(ruta_completa, header=None)
+        mascara_cargada = df.values
+    mascara = mascara_cargada
+    return mascara[y][x] == 1
+
 # recibe el numero de bloque y devuelve 4 valores, x_desde, x_hasta, y_desde, y_hasta
 # hay 8 bloques en cada eje
 def num_bloque_posiciones_matriz(num):
@@ -146,6 +162,9 @@ def generar_matrices_bloque():
         # obtengo los indices de la matriz para ese bloque
         medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
 
+        if not coordenada_en_mascara(medidor_x, medidor_y):
+            continue
+        
         ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 
         # print("Medidor: ", numMedidor, " x: ", medidor_x, " y: ", medidor_y)

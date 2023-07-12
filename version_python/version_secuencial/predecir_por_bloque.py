@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import time 
-from math import floor 
+from math import floor
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
@@ -18,7 +18,17 @@ ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 cantidadMedidores = 16*16
 tamaño_matriz = TAMAÑO_MATRIZ
 
+mascara_cargada = None
 
+def coordenada_en_mascara(x,y):
+    global mascara_cargada
+    # cargamos mascara matriz desde auxiliar/mascara.csv
+    if mascara_cargada is None:
+        ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+        df = pd.read_csv(ruta_completa, header=None)
+        mascara_cargada = df.values
+    mascara = mascara_cargada
+    return mascara[y][x] == 1
 
 def convertir_medidor_a_cord(numMedidor):
     y = floor(numMedidor / 16)
@@ -60,6 +70,10 @@ def predecir_por_bloque(steps=5):
         predicciones = np.zeros(tamaño_matriz)
         for i in range(16):
             for j in range(16):
+
+                if not coordenada_en_mascara(j, i):
+                    continue
+
                 numMedidor = i * 16 + j 
                 # obtengo el nombre del archivo
                 clave = str(numMedidor)
@@ -98,6 +112,9 @@ def predecir_por_bloque(steps=5):
         for numMedidor in range(0, cantidadMedidores):
             # obtengo los indices de la matriz para ese bloque
             medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
+
+            if not coordenada_en_mascara(medidor_x, medidor_y):
+                continue
 
             for i in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):
                 for j in range(cantidad_fuera_del_medidor*-1, cantidad_fuera_del_medidor+1):

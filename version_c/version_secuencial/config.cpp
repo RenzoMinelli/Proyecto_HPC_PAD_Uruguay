@@ -1,16 +1,18 @@
-#include <iostream>
-#include <string>
-#include <filesystem>
+#include "config.h"
 #include <unistd.h>
 
-using std::cout; using std::cin;
-using std::endl; using std::string;
-using std::filesystem::current_path;
+char tmp[256];
 
-int main() {
-    char tmp[256];
-    getcwd(tmp, 256);
-    cout << "Current working directory: " << tmp << endl;
+const std::string file_directory = getcwd(tmp, 256);
 
-    return EXIT_SUCCESS;
-}
+const std::string DIRECTORIO_CSVS_DATOS = file_directory + "/datos/";
+const std::string DIRECTORIO_CSVS_MATRICES_GENERADAS = file_directory + "/matrices_por_bloque/";
+const std::string DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR = file_directory + "/matrices_por_medidor/";
+const std::string DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA = file_directory + "/matrices_por_bloque_anteriores/";
+const std::string DIRECTORIO_MODELOS_GENERADOS = file_directory + "/modelos/";
+const std::string DIRECTORIO_IMAGENES_GENERADADS = file_directory + "/images/";
+const std::string DIRECTORIO_AUXILIAR = file_directory + "/auxiliar/";
+const std::string ARCHIVO_TIEMPO_SECUENCIAL = file_directory + "/registro_tiempo.txt";
+
+const int TAMANO_MATRIZ_X = 16;
+const int TAMANO_MATRIZ_Y = 16;

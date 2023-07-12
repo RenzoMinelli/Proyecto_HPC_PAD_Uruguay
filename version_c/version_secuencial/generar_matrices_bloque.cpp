@@ -7,52 +7,16 @@
 #include <cmath>
 #include <filesystem>
 
-void saveMatrixAsCSV(const arma::mat& matrix, const std::string& filename)
-{
-    std::ofstream outputFile(filename);
-    outputFile << matrix;
-    outputFile.close();
-}
-
-arma::mat loadCSV(const std::string& filename)
-{
-    arma::mat matrix;
-    matrix.load(filename, arma::csv_ascii);
-    return matrix;
-}
-
-std::vector<boost::filesystem::path> listFilesInDirectory(const std::string& directoryPath, const std::string& fileExtension)
-{
-    std::vector<boost::filesystem::path> files;
-    boost::filesystem::directory_iterator endIterator;
-    for (boost::filesystem::directory_iterator file(directoryPath); file != endIterator; ++file)
-    {
-        if (boost::filesystem::is_regular_file(file->status()) && file->path().extension() == fileExtension)
-        {
-            files.push_back(file->path());
-        }
-    }
-    return files;
-}
-
-void processMatrix(arma::mat& matrix)
-{
-    for (arma::uword i = 0; i < matrix.n_rows; ++i)
-    {
-        for (arma::uword j = 0; j < matrix.n_cols; ++j)
-        {
-            // Process matrix(i, j)...
-        }
-    }
-}
+#include "config.h"
+using namespace std;
 
 bool coordenada_en_mascara(int x, int y, int** mascara_cargada){
     return mascara_cargada[y][x] == 1;
 }
 
 void convertir_latlong_a_cord(float latitud, float longitud, int* ret){
-    float latitud_redondeado = ceil(latitud, 2);
-    float longitud_redondeado = ceil(longitud, 2);
+    float latitud_redondeado = ceil(latitud * 100.0) / 100.0;
+    float longitud_redondeado = ceil(longitud * 100.0) / 100.0;
 
     float lat_min = -30.33;
     float lat_max = -34.7;
@@ -75,8 +39,15 @@ void convertir_medidor_a_cord(int numMedidor, int* ret){
 }
 
 void generar_matrices_bloque(){
-    int tamaño_matriz_x = 16;
-    int tamaño_matriz_y = 16;
+    int tamano_matriz_x = 16;
+    int tamano_matriz_y = 16;
 
     string directorio_csvs = "";
+}
+
+int main(){
+    cout << "Hello world!" << endl;
+    cout << "DIRECTORIO_CSVS_DATOS: " << DIRECTORIO_CSVS_DATOS << endl;
+
+    return 0;
 }

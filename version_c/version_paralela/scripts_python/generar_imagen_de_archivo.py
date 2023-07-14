@@ -2,7 +2,6 @@ import pandas as pd
 import sys
 
 from config import *
-from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 
 def generar_imagenes_de_archivos(archivo):

@@ -17,12 +17,12 @@ def generar_matrices_bloque(numMedidor):
              
     # cargamos las matrices de los csvs
     matrices = {}
-    for archivo in os.listdir(DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA):
+    for archivo in os.listdir(DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES):
         if archivo.endswith(".csv"):
-            ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA, archivo)
+            ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES, archivo)
             df = pd.read_csv(ruta_completa, header=None)
             clave = archivo.split('.')[0]
-            matrices[archivo] = df.values
+            matrices[clave] = df.values
 
     # Ahora agarramos las matrices y generamos una matriz para cada bloque 2x2
 

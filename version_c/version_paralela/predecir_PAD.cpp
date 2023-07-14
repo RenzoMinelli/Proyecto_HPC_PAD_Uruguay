@@ -14,18 +14,16 @@ int main() {
     const int NUMERO_DE_PROCESOS = 15;
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
-
-    // Generamos las matrices del mapa entero en cada instante
-    // obtenemos ubicacion actual para poder ejecutar el script
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
-    string pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_bloque.py"; 
 
+    // Generamos las matrices del mapa entero en cada instante
+    string pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_mapa.py"; 
 
     vector<string> files;
     for(auto& p: filesystem::directory_iterator("datos")) {
-        files.push_back(p.path());
+        files.push_back(p.path().filename());
     }
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 

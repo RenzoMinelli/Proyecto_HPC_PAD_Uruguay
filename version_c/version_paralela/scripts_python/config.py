@@ -1,6 +1,6 @@
 import os 
 
-file_directory = os.path.dirname(os.path.realpath(__file__))
+file_directory = os.path.dirname(os.path.realpath(__file__)) + "/.."
 
 DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = f'{file_directory}/matrices_por_fecha_anteriores/'
 DIRECTORIO_CSVS_DATOS = f"{file_directory}/datos/"

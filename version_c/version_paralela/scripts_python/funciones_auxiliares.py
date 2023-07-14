@@ -30,25 +30,6 @@ def crear_heatmap_de_csv(matriz,ruta,nombre_imagen, titulo=""):
 
     plt.close()
 
-def convertir_latlong_a_cord(latitud,longitud):
-
-    latitud = round(latitud, 2)
-    longitud = round(longitud, 2)
-
-    lat_min = -30.33
-    lat_max = -34.7
-    
-    long_max = -53.4
-    long_min = -58.33
-
-    # queremos que x sea entero este entre 0 y 15
-    # queremos que y sea entero este entre 1 y 14
-
-    y = int((latitud - lat_min) / (lat_max - lat_min) * 14) + 1
-    x = int((longitud - long_min) / (long_max - long_min) * 15) 
-
-    return x,y
-
 def iniciar_ambiente():
     # para cada constante en config.py llamada DIRECTORIO_XXX, crear un directorio con ese nombre
     print("Creando directorios...")

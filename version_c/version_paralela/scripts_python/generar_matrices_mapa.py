@@ -1,9 +1,28 @@
 import pandas as pd
 import numpy as np
+import sys
 import os
 from config import *
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
-from funciones_auxiliares import convertir_latlong_a_cord
+
+def convertir_latlong_a_cord(latitud,longitud):
+
+    latitud = round(latitud, 2)
+    longitud = round(longitud, 2)
+
+    lat_min = -30.33
+    lat_max = -34.7
+    
+    long_max = -53.4
+    long_min = -58.33
+
+    # queremos que x sea entero este entre 0 y 15
+    # queremos que y sea entero este entre 1 y 14
+
+    y = int((latitud - lat_min) / (lat_max - lat_min) * 14) + 1
+    x = int((longitud - long_min) / (long_max - long_min) * 15) 
+
+    return x,y
 
 def generar_matriz_mapa(archivo):
 
@@ -11,10 +30,7 @@ def generar_matriz_mapa(archivo):
 
     ruta_completa = os.path.join(DIRECTORIO_CSVS_DATOS, archivo)
     df = pd.read_csv(ruta_completa)
-    latitud = df['Latitud']
-    longitud = df['Longitud']
-    # obtengo la coordenada en la matriz
-    x,y = convertir_latlong_a_cord(latitud,longitud)
+    
 
     # los archivos se llaman inia_gras_pad2006.csv, el año son los ultimos 4 digitos
     anio = archivo[-8:-4]
@@ -32,6 +48,13 @@ def generar_matriz_mapa(archivo):
             for index, row in df.iterrows():
                 # obtengo el valor de la columna
                 valor = row[columna]
+
+                latitud = row['Latitud']
+                longitud = row['Longitud']
+
+                # obtengo la coordenada en la matriz
+                x,y = convertir_latlong_a_cord(latitud,longitud)
+
                 # asigno el valor a la matriz
                 matriz[y][x] = valor / 100
 
@@ -43,4 +66,5 @@ def generar_matriz_mapa(archivo):
             guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES,nombre_matriz)
 
 if __name__ == "__main__":
-    generar_matriz_mapa()
+    archivo = sys.argv[1]
+    generar_matriz_mapa(archivo)

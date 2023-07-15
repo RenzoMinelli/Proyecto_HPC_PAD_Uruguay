@@ -9,11 +9,15 @@
 
 using namespace std;
 
-int main() {
+#define NUMERO_DE_PROCESOS 15
 
-    const int NUMERO_DE_PROCESOS = 15;
+int generar_matrices_por_bloques() {
+
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
 
     const int mascara[16][16] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -33,10 +37,6 @@ int main() {
         {0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     };
-
-    char cwd[1024];
-    getcwd(cwd, sizeof(cwd));
-    string current_working_dir(cwd);
 
     // Generamos las matrices del mapa entero en cada instante
     string pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_mapa.py"; 
@@ -83,14 +83,23 @@ int main() {
         }
     }
 
+    return 0;
+}
+
+int generar_imagenes_fechas_anteriores(){
     // Generamos las imagenes de fechas anteriores 
-    pythonScriptPath = current_working_dir + "/scripts_python/generar_imagen_de_archivo.py";  
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
+    vector<string> files;
+
+    string pythonScriptPath = current_working_dir + "/scripts_python/generar_imagen_de_archivo.py";  
     files.clear();
 
     for(auto& p: filesystem::directory_iterator("matrices_por_fecha_anteriores")) {
         files.push_back(p.path().filename());
     }
-    numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
+    int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
     #pragma omp parallel for
     for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
@@ -102,5 +111,11 @@ int main() {
         }
     }
     
+    return 0;
+}
+
+int main(){
+    generar_matrices_por_bloques();
+    generar_imagenes_fechas_anteriores();
     return 0;
 }

@@ -10,6 +10,7 @@ DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA = f'{file_directory}/matrices_por_bl
 DIRECTORIO_MODELOS_GENERADOS = f'{file_directory}/modelos/'
 DIRECTORIO_IMAGENES_GENERADADS = f'{file_directory}/images/'
 DIRECTORIO_AUXILIAR = f'{file_directory}/auxiliar/'
+DIRECTORIO_PREDICCIONES = f'{file_directory}/predicciones/'
 ARCHIVO_TIEMPO_SECUENCIAL = f'{file_directory}/registro_tiempo.txt'
 
 TAMAÑO_MATRIZ = (16, 16)

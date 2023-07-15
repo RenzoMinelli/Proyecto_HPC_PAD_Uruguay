@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
-from math import floor
 import sys 
-
+from math import floor
 from config import *
-from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
-from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 
 def convertir_medidor_a_cord(numMedidor):
     y = floor(numMedidor / 16)
@@ -32,7 +29,7 @@ def generar_matrices_bloque(numMedidor):
     
     # obtengo los indices de la matriz para ese bloque
     medidor_x, medidor_y = convertir_medidor_a_cord(numMedidor)
-    
+
     ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 
     # print("Medidor: ", numMedidor, " x: ", medidor_x, " y: ", medidor_y)
@@ -78,6 +75,13 @@ def generar_matrices_bloque(numMedidor):
     ruta_completa = os.path.join(directorio_matrices_bloque, str(numMedidor) + '.csv') 
     df = pd.DataFrame(matriz)
     df.to_csv(ruta_completa, header=None, index=None)
+
+
+def coordenada_en_mascara(x,y):
+    ruta_completa = os.path.join(DIRECTORIO_AUXILIAR, 'mascara.csv')
+    df = pd.read_csv(ruta_completa, header=None)
+    mascara = df.values
+    return mascara[y][x] == 1
 
 if __name__ == "__main__":
     numMedidor = int(sys.argv[1])

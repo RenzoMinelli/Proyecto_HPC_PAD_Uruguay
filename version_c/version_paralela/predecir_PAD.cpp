@@ -15,6 +15,25 @@ int main() {
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
 
+    const int mascara[16][16] = {
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+        {0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0},
+        {0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0},
+        {0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0},
+        {0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0},
+        {0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+        {0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0},
+        {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    };
+
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
@@ -41,14 +60,25 @@ int main() {
     
     // ahora por cada medidor lanzamos un proceso que genere las matrices de bloque de ese medidor
     pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_bloque.py";  
-    int medidores_por_proceso = ceil(num_medidores / static_cast<double>(NUMERO_DE_PROCESOS));
+    
+    // obtengo la lista filtrada de medidores que si estan en la mascara
+    vector<int> medidores_en_mascara;
+    for(int i=0; i<16; i++) {
+        for(int j=0; j<16; j++) {
+            if(mascara[i][j] == 1) {
+                medidores_en_mascara.push_back(i*16 + j);
+            }
+        }
+    }
+    int num_medidores_en_mascara = medidores_en_mascara.size();
+    int medidores_por_proceso = ceil(num_medidores_en_mascara / static_cast<double>(NUMERO_DE_PROCESOS));
 
     #pragma omp parallel for
     for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
         int primerMedidor = i * medidores_por_proceso;
-        int ultimoMedidor = min(primerMedidor + medidores_por_proceso, num_medidores);
+        int ultimoMedidor = min(primerMedidor + medidores_por_proceso, num_medidores_en_mascara);
         for(int j=primerMedidor; j<ultimoMedidor; j++) {
-            string command = "python3 " + pythonScriptPath + " " + to_string(j);
+            string command = "python3 " + pythonScriptPath + " " + to_string(medidores_en_mascara[j]);
             system(command.c_str());
         }
     }

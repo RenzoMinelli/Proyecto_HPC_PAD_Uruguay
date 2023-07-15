@@ -114,8 +114,50 @@ int generar_imagenes_fechas_anteriores(){
     return 0;
 }
 
+int entrenar_modelos_por_bloque(){
+     // Generamos las imagenes de fechas anteriores 
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
+    vector<string> files;
+
+    string pythonScriptPath = current_working_dir + "/scripts_python/entrenar_modelos_por_bloque.py";  
+    files.clear();
+
+    for(auto& p: filesystem::directory_iterator("matrices_por_bloque")) {
+        files.push_back(p.path().filename());
+    }
+    int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
+
+    #pragma omp parallel for
+    for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
+        int firstFile = i * numFilesPerProcess;
+        int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
+        for(int j=firstFile; j<lastFile; j++) {
+            string command = "python3 " + pythonScriptPath + " " + files[j];
+            system(command.c_str());
+        }
+    }
+    
+    return 0;
+}
 int main(){
-    generar_matrices_por_bloques();
-    generar_imagenes_fechas_anteriores();
+    int ret = 0;
+
+    ret = generar_matrices_por_bloques();
+    if(ret != 0) {
+        return ret;
+    }
+
+    ret = generar_imagenes_fechas_anteriores();
+    if(ret != 0) {
+        return ret;
+    }
+    
+    ret = entrenar_modelos_por_bloque();
+    if(ret != 0) {
+        return ret;
+    }
+
     return 0;
 }

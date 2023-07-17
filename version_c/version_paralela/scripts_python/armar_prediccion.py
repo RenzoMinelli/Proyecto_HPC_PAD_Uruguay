@@ -1,12 +1,10 @@
 import numpy as np
 import pandas as pd
 import os
-import time 
-from math import floor, ceil
+from math import floor
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
-from keras.models import load_model
 import multiprocessing as mp
 import sys
 
@@ -33,14 +31,24 @@ def armar_prediccion(step):
         numMedidor = int(archivo[:-4])
         x,y = convertir_medidor_a_cord(numMedidor)
         direccion_completa = os.path.join(DIRECTORIO_PREDICCIONES, archivo)
-        with open(direccion_completa, 'w') as file:
-            data = file.read().rstrip()
+        print("Leyendo archivo " + direccion_completa)
+
+        with open(direccion_completa, 'r') as file:
+
+            print(f"Procesando {archivo}")
+
+            data = file.read()
+
+            print(f"Prediccion: {data}")
+
+            # remove whitespaces and \n
+            data = data.strip()
+            print(f"Prediccion: {data}")
+            
             predicciones[y][x] = float(data)
 
-            # vaciamos el archivo
-            file.seek(0)
-            file.truncate()
-    
+        os.remove(direccion_completa)
+
     # guardamos la matriz de predicciones
     print(f"Predicciones para step {step} listas")
     aux = ""
@@ -52,7 +60,7 @@ def armar_prediccion(step):
         aux = str(step)
 
     # Guardar la matriz en un archivo CSV
-    nombre_archivo = f"matriz_prediccion_step_{aux}.csv"
+    nombre_archivo = f"matriz_prediccion_step_{step}.csv"
     print(f"Guardando matriz en {nombre_archivo}")
 
     guardar_matriz(predicciones, DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES, nombre_archivo)

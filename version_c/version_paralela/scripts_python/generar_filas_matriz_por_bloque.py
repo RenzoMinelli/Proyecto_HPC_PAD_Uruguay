@@ -2,18 +2,13 @@ import numpy as np
 import pandas as pd
 import os
 import time 
-from math import floor, ceil
-from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
-from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
+from math import floor
 from config import *
-from keras.models import load_model
 import multiprocessing as mp
 import sys
 
 cantidad_fuera_del_medidor = 1
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 def convertir_medidor_a_cord(numMedidor):
     y = floor(numMedidor / 16)

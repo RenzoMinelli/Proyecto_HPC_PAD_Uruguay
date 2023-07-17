@@ -37,7 +37,7 @@ def coordenada_en_mascara(x,y):
     return mascara[y][x] == 1
 
 def predecir_modelo(archivo):
-    print(f"Procesando {archivo}")
+    # print(f"Procesando {archivo}")
     ruta_completa = os.path.join(directorio_modelos, archivo)
     num_modelo = archivo[:-6]
     modelo = load_model(ruta_completa)

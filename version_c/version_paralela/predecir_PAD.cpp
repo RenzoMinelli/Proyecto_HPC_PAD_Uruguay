@@ -233,7 +233,7 @@ int predecir_por_bloque(){
 
 int main(){
     int ret = 0;
-
+    
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
@@ -249,7 +249,7 @@ int main(){
     if(ret != 0) {
         return ret;
     }
-    
+
     ret = predecir_por_bloque();
     if(ret != 0) {
         return ret;

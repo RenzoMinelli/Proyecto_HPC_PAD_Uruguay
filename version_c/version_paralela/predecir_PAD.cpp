@@ -231,6 +231,22 @@ int predecir_por_bloque(){
     return 0;
 }
 
+
+
+int producir_video(){
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
+    vector<string> files;
+
+    string pythonScriptPath = current_working_dir + "/scripts_python/producir_video.py";
+    string command = "python3 " + pythonScriptPath ;
+    system(command.c_str());
+
+    return 0;
+
+};
+
 int main(){
     int ret = 0;
     
@@ -251,6 +267,11 @@ int main(){
     }
 
     ret = predecir_por_bloque();
+    if(ret != 0) {
+        return ret;
+    }
+    
+    ret = producir_video();
     if(ret != 0) {
         return ret;
     }

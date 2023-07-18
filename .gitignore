@@ -1,0 +1,14 @@
+**/modelos
+**/matrices_por_medidor
+**/matrices_por_bloque
+**/matrices_por_bloque_anteriores
+**/images
+**/matrices_por_fecha_anteriores
+**/__pycache__
+**/registro_tiempo.txt
+**/VALORES_PRUEBA
+**/predicciones
+**/opencV2
+/version_c/version_paralela/predecir_PAD
+video_salida.mp4
+.vscode/

@@ -1,4 +1,5 @@
 #include <omp.h>
+#include <mpi.h>
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -6,10 +7,71 @@
 #include <string>
 #include <cmath>
 #include <unistd.h>
+#include <chrono>
+#include <thread>
+#include <dirent.h>
+
 
 using namespace std;
 
 #define NUMERO_DE_PROCESOS 15
+#define N 10 
+
+void listarArchivos(const std::string& carpeta,vector<string> files) {
+
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    std::vector<std::string> nombresArchivos;
+
+    if (rank == 0) {
+        DIR* directorio = opendir(carpeta.c_str());
+        if (directorio != nullptr) {
+            dirent* archivo;
+            while ((archivo = readdir(directorio)) != nullptr) {
+                if (archivo->d_type == DT_REG) {  // Solo archivos regulares
+                    nombresArchivos.push_back(archivo->d_name);
+                }
+            }
+            closedir(directorio);
+        } else {
+            std::cerr << "Error al abrir la carpeta" << std::endl;
+            MPI_Abort(MPI_COMM_WORLD, 1);
+            return;
+        }
+    }
+
+    int totalArchivos = nombresArchivos.size();
+
+    // Enviar la cantidad total de archivos a todos los procesos
+    MPI_Bcast(&totalArchivos, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // Calcular la porción de archivos que le toca a cada proceso
+    int archivosPorProceso = totalArchivos / size;
+    int archivosExtras = totalArchivos % size;
+
+    int inicio = archivosPorProceso * rank + std::min(rank, archivosExtras);
+    int fin = inicio + archivosPorProceso + (rank < archivosExtras ? 1 : 0);
+
+    // Enviar la cantidad y posición de archivos a cada proceso
+    int cantidadArchivos = fin - inicio;
+    MPI_Send(&cantidadArchivos, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+    MPI_Send(&inicio, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
+
+    // Cada proceso imprime su información de archivos
+    std::cout << "Proceso " << rank << ": Imprimir " << cantidadArchivos << " archivos a partir de la posición " << inicio << std::endl;
+
+    string pythonScriptPath = current_working_dir + "/scripts_python/generar_imagen_de_archivo.py";  
+    for(int j=inicio; j<inicio+cantidadArchivos; j++) {
+        string command = "python3 " + pythonScriptPath + " " + files[j];
+        system(command.c_str());
+    }
+    
+}
 
 int generar_matrices_por_bloques() {
 
@@ -102,15 +164,14 @@ int generar_imagenes_fechas_anteriores(){
     }
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
-    #pragma omp parallel for
-    for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
-        int firstFile = i * numFilesPerProcess;
-        int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
-        for(int j=firstFile; j<lastFile; j++) {
-            string command = "python3 " + pythonScriptPath + " " + files[j];
-            system(command.c_str());
-        }
-    }
+   
+
+    MPI_Init(NULL,NULL);
+    listarArchivos("./matrices_por_fecha_anteriores/",files);
+    MPI_Finalize();
+
+
+
     
     return 0;
 }
@@ -229,17 +290,16 @@ int producir_video(){
 
 int main(){
     int ret = 0;
-    
+
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
     }
-    
+
     ret = generar_imagenes_fechas_anteriores();
     if(ret != 0) {
         return ret;
     }
-   
 
     ret = entrenar_modelos_por_bloque();
     if(ret != 0) {
@@ -255,6 +315,6 @@ int main(){
     if(ret != 0) {
         return ret;
     }
-    
+
     return 0;
 }

@@ -10,5 +10,6 @@
 **/predicciones
 **/opencV2
 **/predecir_PAD
+**/training_data
 video_salida.mp4
 .vscode/

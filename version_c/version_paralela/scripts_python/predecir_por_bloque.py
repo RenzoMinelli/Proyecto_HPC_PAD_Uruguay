@@ -9,6 +9,7 @@ from config import *
 from keras.models import load_model
 import multiprocessing as mp
 import sys
+import pickle 
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 
@@ -36,25 +37,26 @@ def coordenada_en_mascara(x,y):
     mascara = mascara_cargada
     return mascara[y][x] == 1
 
-def predecir_modelo(archivo):
+def predecir_modelo(archivo, step=1):
     # print(f"Procesando {archivo}")
     ruta_completa = os.path.join(directorio_modelos, archivo)
     num_modelo = archivo[:-6]
-    modelo = load_model(ruta_completa)
-
-    ruta_completa_matriz = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, num_modelo + '.csv')
-    df = pd.read_csv(ruta_completa_matriz, header=None)
-    matriz = df.values
-
-    df = pd.DataFrame(matriz[-1:,:]).drop(columns=[0])
-    lista = df.values
-    bloque = lista.reshape(1, 9)
-    # predigo
-    prediccion = modelo.predict(bloque, verbose=None)
-    prediccion = prediccion[0,0]
-    print(prediccion)
+    model = load_model(ruta_completa)
     
+    n_days_for_prediction = step # cuantos pasos predecir
+
+    # cargo la training data 
+    prediccion = 0
+    direccion_trainX = os.path.join(DIRECTORIO_TRAINING_DATA, num_modelo + '.npy')
+    with open(direccion_trainX, 'rb') as f:
+        trainX = np.load(f)
+        prediccion = model.predict(trainX[-n_days_for_prediction:], verbose=None)
+
+    # guardamos la matriz de predicciones para todos los steps
+    predicciones = pd.DataFrame(prediccion)
+    guardar_matriz(predicciones, DIRECTORIO_PREDICCIONES, num_modelo + '.csv')
 
 if __name__ == "__main__":
     archivo = sys.argv[1]
-    predecir_modelo(archivo)
+    step = int(sys.argv[2])
+    predecir_modelo(archivo, step)

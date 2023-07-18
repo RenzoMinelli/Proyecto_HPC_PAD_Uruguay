@@ -33,30 +33,19 @@ def armar_prediccion(step):
         direccion_completa = os.path.join(DIRECTORIO_PREDICCIONES, archivo)
         print("Leyendo archivo " + direccion_completa)
 
+
         with open(direccion_completa, 'r') as file:
 
-            print(f"Procesando {archivo}")
-
-            data = file.read()
-
-            print(f"Prediccion: {data}")
-
-            # remove whitespaces and \n
-            data = data.strip()
-            print(f"Prediccion: {data}")
-            
+            predicciones_steps = pd.read_csv(file, header=None)
+            data = predicciones_steps[0][step]
             predicciones[y][x] = float(data)
-
-        os.remove(direccion_completa)
 
     # guardamos la matriz de predicciones
     print(f"Predicciones para step {step} listas")
     aux = ""
     if step < 10:
-        print("Agregando 0")
         aux = "0" + str(step)
     else:
-        print("No agrego 0")
         aux = str(step)
 
     # Guardar la matriz en un archivo CSV

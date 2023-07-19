@@ -36,9 +36,11 @@ def armar_prediccion(step):
         with open(direccion_completa, 'r') as file:
 
             predicciones_steps = pd.read_csv(file, header=None)
-            data = predicciones_steps[0][step]
+            data = predicciones_steps[0][0]
             predicciones[y][x] = float(data)
 
+        os.remove(direccion_completa)
+        
     # guardamos la matriz de predicciones
     print(f"Predicciones para step {step} listas")
     aux = ""

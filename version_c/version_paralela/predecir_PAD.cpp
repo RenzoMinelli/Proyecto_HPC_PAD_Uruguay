@@ -225,48 +225,64 @@ int predecir_por_bloque(){
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     };
 
-    string pythonScriptPath = current_working_dir + "/scripts_python/predecir_por_bloque.py";  
-    files.clear();
+    int steps = 5;
 
-    for(auto& p: filesystem::directory_iterator("modelos")) {
-        files.push_back(p.path().filename());
-    }
-    int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
-    int steps = 10;
+    for(int s=0; s<steps; s++){
 
-    // obtengo la lista filtrada de medidores que si estan en la mascara
-    vector<int> medidores_en_mascara;
-    for(int i=0; i<16; i++) {
-        for(int j=0; j<16; j++) {
-            if(mascara[i][j] == 1) {
-                medidores_en_mascara.push_back(i*16 + j);
+        string pythonScriptPath = current_working_dir + "/scripts_python/predecir_por_bloque.py";  
+        files.clear();
+
+        for(auto& p: filesystem::directory_iterator("modelos")) {
+            files.push_back(p.path().filename());
+        }
+        int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
+
+        // obtengo la lista filtrada de medidores que si estan en la mascara
+        vector<int> medidores_en_mascara;
+        for(int i=0; i<16; i++) {
+            for(int j=0; j<16; j++) {
+                if(mascara[i][j] == 1) {
+                    medidores_en_mascara.push_back(i*16 + j);
+                }
             }
         }
-    }
-    int num_medidores_en_mascara = medidores_en_mascara.size();
-    int medidores_por_proceso = ceil(num_medidores_en_mascara / static_cast<double>(NUMERO_DE_PROCESOS));
+        int num_medidores_en_mascara = medidores_en_mascara.size();
+        int medidores_por_proceso = ceil(num_medidores_en_mascara / static_cast<double>(NUMERO_DE_PROCESOS));
 
-    #pragma omp parallel for
-    for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
-        int firstFile = i * numFilesPerProcess;
-        int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
-        for(int j=firstFile; j<lastFile; j++) {
-            string numModelo = files[j].substr(0, files[j].size() - 6);
-            string command = "python3 " + pythonScriptPath + " " + files[j] + " " + to_string(steps);
-            system(command.c_str());
+        #pragma omp parallel for
+        for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
+            int firstFile = i * numFilesPerProcess;
+            int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
+            for(int j=firstFile; j<lastFile; j++) {
+                string numModelo = files[j].substr(0, files[j].size() - 6);
+                string command = "python3 " + pythonScriptPath + " " + files[j];
+                system(command.c_str());
+            }
         }
-    }
 
-    // ahora en predicciones/ quedo un archivo por cada medidor y valor
-    // llamamos a un python que los toma a todos, arma una matriz e imagen
-
-    #pragma omp parallel for
-    for(int s=0; s<steps; s++){
+        // ahora en predicciones/ quedo un archivo por cada medidor y valor
+        // llamamos a un python que los toma a todos, arma una matriz e imagen
+        
         pythonScriptPath = current_working_dir + "/scripts_python/armar_prediccion.py";  
         string command = "python3 " + pythonScriptPath + " " + to_string(s);
         system(command.c_str());
+
+        pythonScriptPath = current_working_dir + "/scripts_python/generar_filas_matriz_por_bloque.py";
+
+        // matriz de preccion quedo en matrices_por_fecha_anteriores/matriz_prediccion_step_{s}.csv
+        string matriz_prediccion_filename = "matriz_prediccion_step_" + to_string(s) + ".csv";
+
+        #pragma omp parallel for
+        for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
+            int primerMedidor = i * medidores_por_proceso;
+            int ultimoMedidor = min(primerMedidor + medidores_por_proceso, num_medidores_en_mascara);
+            for(int j=primerMedidor; j<ultimoMedidor; j++) {
+                string command = "python3 " + pythonScriptPath + " " + matriz_prediccion_filename + " " + to_string(medidores_en_mascara[j]);
+                system(command.c_str());
+            }
+        }
     }
-        
+
     return 0;
 }
 
@@ -355,15 +371,17 @@ void listarArchivos() {
 int main(int argc, char** argv) {
      int ret = 0;
     
+    /*
     MPI_Init(&argc, &argv);
     listarArchivos();
     MPI_Finalize();
     
 
 
-/*int main(){
+    
    
 
+    
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
@@ -373,7 +391,7 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-/*
+    */
     ret = entrenar_modelos_por_bloque();
     if(ret != 0) {
         return ret;
@@ -383,12 +401,12 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-  */ 
+  /*
     ret = producir_video();
     if(ret != 0) {
         return ret;
     }
-
+*/
     return 0;
 }
  

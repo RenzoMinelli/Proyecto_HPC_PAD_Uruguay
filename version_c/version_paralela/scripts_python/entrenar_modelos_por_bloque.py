@@ -38,10 +38,6 @@ def procesar_archivos(archivo):
 
     trainX, trainY = np.array(trainX), np.array(trainY)
 
-    # guardar trainX 
-    direccion_trainX = os.path.join(DIRECTORIO_TRAINING_DATA, clave + '.npy')
-    np.save(direccion_trainX, trainX)
-
     model = create_model(trainX, trainY)
 
     # fit the model

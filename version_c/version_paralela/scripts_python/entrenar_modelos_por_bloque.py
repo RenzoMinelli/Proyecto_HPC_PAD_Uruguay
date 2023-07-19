@@ -17,7 +17,6 @@ def procesar_archivos(archivo):
     df = pd.read_csv(ruta_completa, header=None)
     clave = archivo[:-4]
 
-    train_dates = pd.to_datetime(df[0]) # la primera columna es la fecha
     cols = list(df)[1:] # las columnas que vamos a usar para entrenamineto es todo menos la primera
     df_for_training = df[cols].astype(float)
 

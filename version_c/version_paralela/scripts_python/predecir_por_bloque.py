@@ -5,7 +5,7 @@ from math import floor
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from config import *
 from keras.models import load_model
-import sys
+import sys 
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 
@@ -33,26 +33,32 @@ def coordenada_en_mascara(x,y):
     mascara = mascara_cargada
     return mascara[y][x] == 1
 
-def predecir_modelo(archivo, step=1):
-    # print(f"Procesando {archivo}")
+def predecir_modelo(archivo):
+
+    print(f"Procesando {archivo}")
     ruta_completa = os.path.join(directorio_modelos, archivo)
     num_modelo = archivo[:-6]
     model = load_model(ruta_completa)
     
-    n_days_for_prediction = step # cuantos pasos predecir
+    n_past = 14 # cuantos pasos al pasado mirar
 
     # cargo la training data 
     prediccion = 0
-    direccion_trainX = os.path.join(DIRECTORIO_TRAINING_DATA, num_modelo + '.npy')
-    with open(direccion_trainX, 'rb') as f:
-        trainX = np.load(f)
-        prediccion = model.predict(trainX[-n_days_for_prediction:], verbose=None)
+    ruta_completa_bloque = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, num_modelo + '.csv')
+    df = pd.read_csv(ruta_completa_bloque, header=None)
 
-    # guardamos la matriz de predicciones para todos los steps
-    predicciones = pd.DataFrame(prediccion)
-    guardar_matriz(predicciones, DIRECTORIO_PREDICCIONES, num_modelo + '.csv')
+    cols = list(df)[1:] # las columnas que vamos a usar para entrenamineto es todo menos la primera
+    df_for_training = df[cols].astype(float)
+    df_for_training = df_for_training.values
+
+    data = []
+    posFinal = len(df_for_training) 
+    data.append(df_for_training[posFinal - n_past:posFinal, 0:df_for_training.shape[1]])
+    data = np.array(data)
+    prediccion = model.predict(data)
+    data_frame = pd.DataFrame(prediccion)
+    guardar_matriz(data_frame, DIRECTORIO_PREDICCIONES, num_modelo + '.csv')
 
 if __name__ == "__main__":
     archivo = sys.argv[1]
-    step = int(sys.argv[2])
-    predecir_modelo(archivo, step)
+    predecir_modelo(archivo)

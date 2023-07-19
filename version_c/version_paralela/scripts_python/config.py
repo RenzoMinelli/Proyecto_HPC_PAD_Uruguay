@@ -11,7 +11,6 @@ DIRECTORIO_MODELOS_GENERADOS = f'{file_directory}/modelos/'
 DIRECTORIO_IMAGENES_GENERADADS = f'{file_directory}/images/'
 DIRECTORIO_AUXILIAR = f'{file_directory}/auxiliar/'
 DIRECTORIO_PREDICCIONES = f'{file_directory}/predicciones/'
-DIRECTORIO_TRAINING_DATA = f'{file_directory}/training_data/'
 ARCHIVO_TIEMPO_SECUENCIAL = f'{file_directory}/registro_tiempo.txt'
 
 TAMAÑO_MATRIZ = (16, 16)

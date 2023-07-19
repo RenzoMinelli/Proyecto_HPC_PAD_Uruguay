@@ -1,15 +1,11 @@
 import numpy as np
 import pandas as pd
 import os
-import time 
-from math import floor, ceil
+from math import floor
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
-from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
 from keras.models import load_model
-import multiprocessing as mp
 import sys
-import pickle 
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 

@@ -3,16 +3,7 @@ import pandas as pd
 import os
 from CustomModel import create_model
 from config import *
-import multiprocessing as mp
-from math import ceil
 import sys 
-from sklearn.preprocessing import StandardScaler
-from keras.models import Sequential
-from keras.layers import LSTM
-from keras.layers import Dense, Dropout
-from matplotlib import pyplot as plt
-import seaborn as sns
-import pickle
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 

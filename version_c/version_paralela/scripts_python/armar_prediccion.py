@@ -5,7 +5,6 @@ from math import floor
 from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from funciones_auxiliares import crear_heatmap_de_csv as crear_heatmap
 from config import *
-import multiprocessing as mp
 import sys
 
 def convertir_medidor_a_cord(numMedidor):

@@ -1,4 +1,3 @@
-import csv
 import seaborn as sns
 from PIL import Image
 import matplotlib.pyplot as plt

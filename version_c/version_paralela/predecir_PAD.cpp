@@ -1,5 +1,4 @@
 #include <omp.h>
-#include <mpi.h>
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -111,64 +110,15 @@ int generar_imagenes_fechas_anteriores(){
     }
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
-   
-
-    MPI_Init(NULL,NULL);
-  
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    std::vector<std::string> nombresArchivos;
-
-    if (rank == 0) {
-        DIR* directorio = opendir(carpeta.c_str());
-        if (directorio != nullptr) {
-            dirent* archivo;
-            while ((archivo = readdir(directorio)) != nullptr) {
-                if (archivo->d_type == DT_REG) {  // Solo archivos regulares
-                    nombresArchivos.push_back(archivo->d_name);
-                }
-            }
-            closedir(directorio);
-        } else {
-            std::cerr << "Error al abrir la carpeta" << std::endl;
-            MPI_Abort(MPI_COMM_WORLD, 1);
-            return 1;
+    #pragma omp parallel for
+    for(int i=0; i<NUMERO_DE_PROCESOS; i++) {
+        int firstFile = i * numFilesPerProcess;
+        int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
+        for(int j=firstFile; j<lastFile; j++) {
+            string command = "python3 " + pythonScriptPath + " " + files[j];
+            system(command.c_str());
         }
     }
-
-    int totalArchivos = nombresArchivos.size();
-
-    // Enviar la cantidad total de archivos a todos los procesos
-    MPI_Bcast(&totalArchivos, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // Calcular la porción de archivos que le toca a cada proceso
-    int archivosPorProceso = totalArchivos / size;
-    int archivosExtras = totalArchivos % size;
-
-    int inicio = archivosPorProceso * rank + std::min(rank, archivosExtras);
-    int fin = inicio + archivosPorProceso + (rank < archivosExtras ? 1 : 0);
-
-    // Enviar la cantidad y posición de archivos a cada proceso
-    int cantidadArchivos = fin - inicio;
-    MPI_Send(&cantidadArchivos, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-    MPI_Send(&inicio, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-
-    // Cada proceso imprime su información de archivos
-    std::cout << "Proceso " << rank << ": Imprimir " << cantidadArchivos << " archivos a partir de la posición " << inicio << std::endl;
-
-
-    for(int j=inicio; j<inicio+cantidadArchivos; j++) {
-        string command = "python3 " + pythonScriptPath + " " + files[j];
-        system(command.c_str());
-    }
-
-    MPI_Finalize();
-
-
-
-    
     return 0;
 }
 
@@ -225,7 +175,7 @@ int predecir_por_bloque(){
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     };
 
-    int steps = 5;
+    int steps = 20;
 
     for(int s=0; s<steps; s++){
 
@@ -300,88 +250,26 @@ int producir_video(){
 
 };
 
-
-void listarArchivos() {
-       
+int preparar_ambiente(){
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
-    vector<string> files;
 
-    string pythonScriptPath = current_working_dir + "/scripts_python/generar_imagen_de_archivo.py";  
-    files.clear();
+    string pythonScriptPath = current_working_dir + "/scripts_python/preparar_ambiente.py";
+    string command = "python3 " + pythonScriptPath ;
+    system(command.c_str());
 
-    string carpeta = "./matrices_por_fecha_anteriores/" ;
-    for(auto& p: filesystem::directory_iterator("matrices_por_fecha_anteriores")) {
-        files.push_back(p.path().filename());
-    }
-
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    std::vector<std::string> nombresArchivos;
-
-    if (rank == 0) {
-        DIR* directorio = opendir(carpeta.c_str());
-        if (directorio != nullptr) {
-            dirent* archivo;
-            while ((archivo = readdir(directorio)) != nullptr) {
-                if (archivo->d_type == DT_REG) {  // Solo archivos regulares
-                    nombresArchivos.push_back(archivo->d_name);
-                }
-            }
-            closedir(directorio);
-        } else {
-            std::cerr << "Error al abrir la carpeta" << std::endl;
-            MPI_Abort(MPI_COMM_WORLD, 1);
-            return;
-        }
-    }
-
-    int totalArchivos = nombresArchivos.size();
-
-    // Enviar la cantidad total de archivos a todos los procesos
-    MPI_Bcast(&totalArchivos, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    // Calcular la porción de archivos que le toca a cada proceso
-    int archivosPorProceso = totalArchivos / size;
-    int archivosExtras = totalArchivos % size;
-
-    int inicio = archivosPorProceso * rank + std::min(rank, archivosExtras);
-    int fin = inicio + archivosPorProceso + (rank < archivosExtras ? 1 : 0);
-
-    // Enviar la cantidad y posición de archivos a cada proceso
-    int cantidadArchivos = fin - inicio;
-    MPI_Send(&cantidadArchivos, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-    MPI_Send(&inicio, 1, MPI_INT, rank, 0, MPI_COMM_WORLD);
-
-    // Cada proceso imprime su información de archivos
-    std::cout << "Proceso " << rank << ": Imprimir " << cantidadArchivos << " archivos a partir de la posición " << inicio << std::endl;
-
-
-
-    for(int j=inicio; j<inicio+cantidadArchivos; j++) {
-        string command = "python3 " + pythonScriptPath + " " + files[j];
-        system(command.c_str());
-    }
-
-}
+    return 0;
+};
 
 int main(int argc, char** argv) {
      int ret = 0;
-    
+
+    ret = preparar_ambiente();
+    if(ret != 0) {
+        return ret;
+    }
     /*
-    MPI_Init(&argc, &argv);
-    listarArchivos();
-    MPI_Finalize();
-    
-
-
-    
-   
-
-    
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
@@ -391,17 +279,17 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-    */
+
     ret = entrenar_modelos_por_bloque();
     if(ret != 0) {
         return ret;
     }
-    
+   
     ret = predecir_por_bloque();
     if(ret != 0) {
         return ret;
     }
-  /*
+   
     ret = producir_video();
     if(ret != 0) {
         return ret;

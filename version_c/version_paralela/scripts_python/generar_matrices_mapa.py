@@ -61,7 +61,7 @@ def generar_matriz_mapa(archivo):
             # matriz = aplicar_mascara_a_matriz(matriz)
             nombre_matriz = f"{columna}.csv"
 
-            # creates a .csv file in the directory DIRECTORIO_CSVS_MATRICES_POR_MEDIDOR_PRUEBA with the name nombre_matriz
+            # creates a .csv file in the directory DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES with the name nombre_matriz
             # that csv file contains the matrix
             guardar_matriz(matriz,DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES,nombre_matriz)
 

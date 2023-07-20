@@ -27,7 +27,7 @@ def generar_filas_matriz_por_bloque(archivo, numMedidor):
     ruta_completa_bloque = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, clave + '.csv')
     matriz = pd.read_csv(ruta_completa_bloque, header=None)
     matriz[0] = pd.to_datetime(matriz[0])
-    
+
     # definir las columnas
     columnas = ['tiempo', 'medicion1', 'medicion2', 'medicion3', 'medicion4', 'medicion5', 'medicion6', 'medicion7', 'medicion8', 'medicion9' ]
     matriz.columns = columnas
@@ -58,9 +58,6 @@ def generar_filas_matriz_por_bloque(archivo, numMedidor):
                 fila[numMedidorFila + 1] = 0
 
     # agrego la fila a la matriz del medidor numMedidor
-
-    print("Fila a insertar: \n", fila)
-
     matriz.loc[len(matriz)] = fila
     matriz = matriz.sort_values(by=['tiempo'])
     matriz.to_csv(ruta_completa_bloque, header=None, index=None)

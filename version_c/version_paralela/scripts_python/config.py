@@ -1,4 +1,5 @@
 import os 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 file_directory = os.path.dirname(os.path.realpath(__file__)) + "/.."
 

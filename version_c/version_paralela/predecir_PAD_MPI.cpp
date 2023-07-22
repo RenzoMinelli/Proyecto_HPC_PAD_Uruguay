@@ -11,7 +11,7 @@
 #include <thread>
 #include <dirent.h>
 #include <algorithm>
-
+#include <fstream>
 
 using namespace std;
 
@@ -323,23 +323,53 @@ void imprimir_listas(std::vector<std::vector<std::string>> listas){
     }
 }
 
+int preparar_ambiente(){
+    char cwd[1024];
+    getcwd(cwd, sizeof(cwd));
+    string current_working_dir(cwd);
+
+    string pythonScriptPath = current_working_dir + "/scripts_python/preparar_ambiente.py";
+    string command = "python3 " + pythonScriptPath ;
+    system(command.c_str());
+
+    return 0;
+};
 
 int main(int argc, char** argv) {
     
     int ret,rank,size ;
     int N = 4;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+    std::chrono::duration<double> elapsed;
 
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    
+
+    if(rank==0) {
+        ret = preparar_ambiente();
+        if(ret != 0) {
+            return ret;
+        }
+
+        start = std::chrono::high_resolution_clock::now();
+    }
+
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
     }
     
     MPI_Barrier(MPI_COMM_WORLD);
+
+    if(rank==0) {
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        file << "Tiempo de generar_matrices_por_bloques: " << elapsed.count() << "s\n";
+        start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
+    }
 
     ret = generar_imagenes_fechas_anteriores();
     if(ret != 0) {
@@ -348,6 +378,14 @@ int main(int argc, char** argv) {
 
     MPI_Barrier(MPI_COMM_WORLD);
 
+    if(rank==0) {
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        file << "Tiempo de generar_imagenes_fechas_anteriores: " << elapsed.count() << "s\n";
+        start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
+    }
+
     ret = entrenar_modelos_por_bloque();
     if(ret != 0) {
         return ret;
@@ -355,19 +393,40 @@ int main(int argc, char** argv) {
     
     MPI_Barrier(MPI_COMM_WORLD);
 
+    if(rank==0) {
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        file << "Tiempo de entrenar_modelos_por_bloque: " << elapsed.count() << "s\n";
+        start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
+    }
+
     ret = predecir_por_bloque();
     if(ret != 0) {
         return ret;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
-  
+    
+    if(rank==0) {
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        file << "Tiempo de predecir_por_bloque: " << elapsed.count() << "s\n";
+        start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
+    }
+
     if(rank==0)
     {
         ret = producir_video();
         if(ret != 0) {
             return ret;
         }
+
+        end = std::chrono::high_resolution_clock::now();
+        elapsed = end - start;
+        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        file << "Tiempo de producir_video: " << elapsed.count() << "s\n";
     }
 
     MPI_Finalize();

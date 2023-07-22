@@ -18,32 +18,7 @@ using namespace std;
 #define NUMERO_DE_PROCESOS 15 
 #define NEG 4  
 
-std::vector<std::vector<std::string>> dividirNombresArchivos(const std::string& carpeta, int N) {
-    std::vector<std::string> nombres_archivos;
 
-    // Obtener la lista de nombres de archivos en la carpeta
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(carpeta)) {
-        if (entry.is_regular_file()) {
-            nombres_archivos.push_back(entry.path().filename().string());
-        }
-    }
-
-    // Ordenar los nombres de archivos alfabéticamente
-    std::sort(nombres_archivos.begin(), nombres_archivos.end());
-
-    // Calcular el tamaño aproximado de cada sublista
-    int tamano_sublista = nombres_archivos.size() / N;
-
-    // Crear las N sublistas
-    std::vector<std::vector<std::string>> listas_divididas(N);
-    for (int i = 0; i < N; ++i) {
-        auto first = nombres_archivos.begin() + i * tamano_sublista;
-        auto last = (i == N - 1) ? nombres_archivos.end() : first + tamano_sublista;
-        listas_divididas[i].assign(first, last);
-    }
-
-    return listas_divididas;
-}
 
 int generar_matrices_por_bloques() { // Pronto MPI
 
@@ -328,35 +303,6 @@ int producir_video(){
 
 };
 
-void enviarYRecibirStrings(int rank,std::vector<std::string> lista_strings) {
-    if (rank == 0) { // Proceso maestro
-        // Lista de strings que se enviará
-
-
-        // Enviamos la cantidad de elementos primero
-        int num_elementos = lista_strings.size();
-        MPI_Send(&num_elementos, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-
-        // Enviamos cada string
-        for (const std::string& str : lista_strings) {
-            int longitud = str.length();
-            MPI_Send(&longitud, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-            MPI_Send(str.c_str(), longitud, MPI_CHAR, 1, 0, MPI_COMM_WORLD);
-        }
-    } else { // Otros procesos
-        int num_elementos;
-        MPI_Recv(&num_elementos, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-        for (int i = 0; i < num_elementos; ++i) {
-            int longitud;
-            MPI_Recv(&longitud, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            std::vector<char> buffer(longitud + 1); // +1 para el carácter nulo de terminación
-            MPI_Recv(buffer.data(), longitud, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            buffer[longitud] = '\0';
-            std::cout << "Proceso " << rank << " recibió: " << buffer.data() << std::endl;
-        }
-    }
-}
 
 void imprimir_listas(std::vector<std::vector<std::string>> listas){
     // Mostrar los nombres de archivos en cada lista
@@ -370,6 +316,7 @@ void imprimir_listas(std::vector<std::vector<std::string>> listas){
     }
 }
 
+
 int main(int argc, char** argv) {
     
     int ret,rank,size ;
@@ -380,7 +327,12 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
-    
+        
+    ret = generar_matrices_por_bloques();
+     if(ret != 0) {
+        return ret;
+    }
+
     ret = generar_imagenes_fechas_anteriores();
      if(ret != 0) {
         return ret;
@@ -393,14 +345,14 @@ int main(int argc, char** argv) {
         return ret;
     }
     
-     MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     ret = predecir_por_bloque();
     if(ret != 0) {
         return ret;
     }
 
-     MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
   
     if(rank==0)
     {

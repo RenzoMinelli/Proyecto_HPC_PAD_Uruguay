@@ -334,14 +334,15 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
-        
     ret = generar_matrices_por_bloques();
-     if(ret != 0) {
+    if(ret != 0) {
         return ret;
     }
+    
+    MPI_Barrier(MPI_COMM_WORLD);
 
     ret = generar_imagenes_fechas_anteriores();
-     if(ret != 0) {
+    if(ret != 0) {
         return ret;
     }
 

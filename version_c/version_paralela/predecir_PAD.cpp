@@ -9,7 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <dirent.h>
-
+#include <algorithm> 
 
 using namespace std;
 
@@ -51,6 +51,9 @@ int generar_matrices_por_bloques() {
     for(auto& p: filesystem::directory_iterator("datos")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
+
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
    
     #pragma omp parallel for
@@ -108,6 +111,9 @@ int generar_imagenes_fechas_anteriores(){
     for(auto& p: filesystem::directory_iterator("matrices_por_fecha_anteriores")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
+
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
     #pragma omp parallel for
@@ -135,6 +141,9 @@ int entrenar_modelos_por_bloque(){
     for(auto& p: filesystem::directory_iterator("matrices_por_bloque")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
+
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
     #pragma omp parallel for
@@ -185,6 +194,9 @@ int predecir_por_bloque(){
         for(auto& p: filesystem::directory_iterator("modelos")) {
             files.push_back(p.path().filename());
         }
+        // Ordena el vector
+        std::sort(files.begin(), files.end());
+
         int numFilesPerProcess = ceil(files.size() / static_cast<double>(NUMERO_DE_PROCESOS));
 
         // obtengo la lista filtrada de medidores que si estan en la mascara
@@ -240,7 +252,6 @@ int producir_video(){
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
-    vector<string> files;
 
     string pythonScriptPath = current_working_dir + "/scripts_python/producir_video.py";
     string command = "python3 " + pythonScriptPath ;
@@ -269,7 +280,7 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-    /*
+    
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
@@ -294,7 +305,7 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-*/
+
     return 0;
 }
  

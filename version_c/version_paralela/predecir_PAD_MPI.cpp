@@ -59,6 +59,9 @@ int generar_matrices_por_bloques() { // Pronto MPI
     for(auto& p: filesystem::directory_iterator("datos")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
+
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(size));
    
 
@@ -119,13 +122,12 @@ int generar_imagenes_fechas_anteriores(){ // Pronto MPI
     for(auto& p: filesystem::directory_iterator("matrices_por_fecha_anteriores")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-
-
 
     int totalArchivos = files.size();
 
@@ -175,6 +177,9 @@ int entrenar_modelos_por_bloque(){ // Pronto MPI
     for(auto& p: filesystem::directory_iterator("matrices_por_bloque")) {
         files.push_back(p.path().filename());
     }
+    // Ordena el vector
+    std::sort(files.begin(), files.end());
+
     int numFilesPerProcess = ceil(files.size() / static_cast<double>(size));
 
     
@@ -231,6 +236,9 @@ int predecir_por_bloque(){ // Pronto MPI
         for(auto& p: filesystem::directory_iterator("modelos")) {
             files.push_back(p.path().filename());
         }
+        // Ordena el vector
+        std::sort(files.begin(), files.end());
+
         int numFilesPerProcess = ceil(files.size() / static_cast<double>(size));
 
         // obtengo la lista filtrada de medidores que si estan en la mascara
@@ -292,7 +300,6 @@ int producir_video(){
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
-    vector<string> files;
 
     string pythonScriptPath = current_working_dir + "/scripts_python/producir_video.py";
     string command = "python3 " + pythonScriptPath ;
@@ -361,7 +368,6 @@ int main(int argc, char** argv) {
             return ret;
         }
     }
-
 
     MPI_Finalize();
     return 0;

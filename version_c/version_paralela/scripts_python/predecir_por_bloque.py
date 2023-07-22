@@ -6,7 +6,7 @@ from funciones_auxiliares import guardar_matriz_como_csv as guardar_matriz
 from config import *
 from keras.models import load_model
 import sys 
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 
 # Directorio donde se guardarán las imágenes

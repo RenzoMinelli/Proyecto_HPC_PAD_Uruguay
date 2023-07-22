@@ -53,7 +53,7 @@ def armar_prediccion(step):
     nombre_archivo = f"matriz_prediccion_step_{step}.csv"
     print(f"Guardando matriz en {nombre_archivo}")
 
-    guardar_matriz(predicciones, DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES, nombre_archivo)
+    guardar_matriz(predicciones, DIRECTORIO_MATRICES_PREDICCIONES, nombre_archivo)
 
     # ahora voy a graficar un mapa de calor con las predicciones      
     nombre_imagen = f"imagen_prediccion_step_{aux}.png"

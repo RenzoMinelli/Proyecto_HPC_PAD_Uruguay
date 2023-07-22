@@ -19,7 +19,7 @@ def generar_filas_matriz_por_bloque(archivo, numMedidor):
     # cargamos la matriz de predicciones 
     clave = str(numMedidor)
 
-    ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES, archivo)
+    ruta_completa = os.path.join(DIRECTORIO_MATRICES_PREDICCIONES, archivo)
     df = pd.read_csv(ruta_completa, header=None)
     matriz_predicciones = df
 

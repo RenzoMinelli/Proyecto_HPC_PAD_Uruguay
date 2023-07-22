@@ -4,6 +4,7 @@ import os
 from CustomModel import create_model
 from config import *
 import sys 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 

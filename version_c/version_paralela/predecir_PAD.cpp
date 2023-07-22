@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-    /*
+    
     ret = generar_matrices_por_bloques();
     if(ret != 0) {
         return ret;
@@ -305,7 +305,7 @@ int main(int argc, char** argv) {
     if(ret != 0) {
         return ret;
     }
-*/
+
     return 0;
 }
  

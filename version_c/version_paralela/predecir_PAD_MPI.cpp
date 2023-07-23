@@ -15,12 +15,9 @@
 
 using namespace std;
 
-#define NUMERO_DE_PROCESOS 15 
-#define NEG 4  
 
 
-
-int generar_matrices_por_bloques() { // Pronto MPI
+int generar_matrices_por_bloques(rank,size) { // Pronto MPI
 
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
@@ -28,9 +25,7 @@ int generar_matrices_por_bloques() { // Pronto MPI
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
 
     const int mascara[16][16] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -106,7 +101,7 @@ int generar_matrices_por_bloques() { // Pronto MPI
     return 0;
 }
 
-int generar_imagenes_fechas_anteriores(){ // Pronto MPI
+int generar_imagenes_fechas_anteriores(rank,size){ // Pronto MPI
     // Generamos las imagenes de fechas anteriores 
    
       
@@ -125,9 +120,7 @@ int generar_imagenes_fechas_anteriores(){ // Pronto MPI
     // Ordena el vector
     std::sort(files.begin(), files.end());
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
 
     int totalArchivos = files.size();
 
@@ -159,11 +152,8 @@ int generar_imagenes_fechas_anteriores(){ // Pronto MPI
     return 0;
 }
 
-int entrenar_modelos_por_bloque(){ // Pronto MPI
+int entrenar_modelos_por_bloque(rank,size){ // Pronto MPI
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     // Generamos las imagenes de fechas anteriores 
     char cwd[1024];
@@ -196,16 +186,14 @@ int entrenar_modelos_por_bloque(){ // Pronto MPI
     return 0;
 }
 
-int predecir_por_bloque(){ // Pronto MPI
+int predecir_por_bloque(rank,size){ // Pronto MPI
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
     vector<string> files;
 
 
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
 
     const int mascara[16][16] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -355,8 +343,9 @@ int main(int argc, char** argv) {
 
         start = std::chrono::high_resolution_clock::now();
     }
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    ret = generar_matrices_por_bloques();
+    ret = generar_matrices_por_bloques(rank,size);
     if(ret != 0) {
         return ret;
     }
@@ -371,7 +360,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = generar_imagenes_fechas_anteriores();
+    ret = generar_imagenes_fechas_anteriores(rank,size);
     if(ret != 0) {
         return ret;
     }
@@ -386,7 +375,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = entrenar_modelos_por_bloque();
+    ret = entrenar_modelos_por_bloque(rank,size);
     if(ret != 0) {
         return ret;
     }
@@ -401,7 +390,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = predecir_por_bloque();
+    ret = predecir_por_bloque(rank,size);
     if(ret != 0) {
         return ret;
     }
@@ -416,6 +405,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
+    MPI_Barrier(MPI_COMM_WORLD);
     if(rank==0)
     {
         ret = producir_video();

@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-int generar_matrices_por_bloques(rank,size) { // Pronto MPI
+int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
 
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
@@ -101,7 +101,7 @@ int generar_matrices_por_bloques(rank,size) { // Pronto MPI
     return 0;
 }
 
-int generar_imagenes_fechas_anteriores(rank,size){ // Pronto MPI
+int generar_imagenes_fechas_anteriores(int rank, int size){ // Pronto MPI
     // Generamos las imagenes de fechas anteriores 
    
       
@@ -152,7 +152,7 @@ int generar_imagenes_fechas_anteriores(rank,size){ // Pronto MPI
     return 0;
 }
 
-int entrenar_modelos_por_bloque(rank,size){ // Pronto MPI
+int entrenar_modelos_por_bloque(int rank, int size){ // Pronto MPI
 
 
     // Generamos las imagenes de fechas anteriores 
@@ -186,14 +186,11 @@ int entrenar_modelos_por_bloque(rank,size){ // Pronto MPI
     return 0;
 }
 
-int predecir_por_bloque(rank,size){ // Pronto MPI
+int predecir_por_bloque(int rank, int size, int steps){ // Pronto MPI
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
     vector<string> files;
-
-
-
 
     const int mascara[16][16] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -213,8 +210,6 @@ int predecir_por_bloque(rank,size){ // Pronto MPI
         {0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     };
-
-    int steps = 5;
 
     for(int s=0; s<steps; s++){
 
@@ -251,8 +246,8 @@ int predecir_por_bloque(rank,size){ // Pronto MPI
             system(command.c_str());
         }
         
+        MPI_Barrier(MPI_COMM_WORLD);
 
-        
         if(rank==0){
             // ahora en predicciones/ quedo un archivo por cada medidor y valor
             // llamamos a un python que los toma a todos, arma una matriz e imagen
@@ -262,14 +257,12 @@ int predecir_por_bloque(rank,size){ // Pronto MPI
             system(command.c_str());
         }
 
-         MPI_Barrier(MPI_COMM_WORLD);
+        MPI_Barrier(MPI_COMM_WORLD);
 
         pythonScriptPath = current_working_dir + "/scripts_python/generar_filas_matriz_por_bloque.py";
 
         // matriz de preccion quedo en matrices_por_fecha_anteriores/matriz_prediccion_step_{s}.csv
         string matriz_prediccion_filename = "matriz_prediccion_step_" + to_string(s) + ".csv";
-
-
 
         int primerMedidor = i * medidores_por_proceso;
         int ultimoMedidor = min(primerMedidor + medidores_por_proceso, num_medidores_en_mascara);
@@ -277,7 +270,6 @@ int predecir_por_bloque(rank,size){ // Pronto MPI
             string command = "python3 " + pythonScriptPath + " " + matriz_prediccion_filename + " " + to_string(medidores_en_mascara[j]);
             system(command.c_str());
         }
-        
     }
 
     return 0;
@@ -325,6 +317,11 @@ int preparar_ambiente(){
 
 int main(int argc, char** argv) {
     
+    int steps = 5;
+    if(argc > 1){ // se manda el valor de steps a predecir
+        steps = atoi(argv[1]);
+    }
+
     int ret,rank,size ;
     int N = 4;
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
@@ -336,6 +333,9 @@ int main(int argc, char** argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     if(rank==0) {
+
+        printf("\nSe van a predecir %d steps\n", steps);
+
         ret = preparar_ambiente();
         if(ret != 0) {
             return ret;
@@ -345,7 +345,7 @@ int main(int argc, char** argv) {
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
-    ret = generar_matrices_por_bloques(rank,size);
+    ret = generar_matrices_por_bloques(rank, size);
     if(ret != 0) {
         return ret;
     }
@@ -360,7 +360,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = generar_imagenes_fechas_anteriores(rank,size);
+    ret = generar_imagenes_fechas_anteriores(rank, size);
     if(ret != 0) {
         return ret;
     }
@@ -375,7 +375,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = entrenar_modelos_por_bloque(rank,size);
+    ret = entrenar_modelos_por_bloque(rank, size);
     if(ret != 0) {
         return ret;
     }
@@ -390,7 +390,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = predecir_por_bloque(rank,size);
+    ret = predecir_por_bloque(rank, size, steps);
     if(ret != 0) {
         return ret;
     }

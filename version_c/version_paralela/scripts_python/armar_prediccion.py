@@ -30,8 +30,6 @@ def armar_prediccion(step):
         numMedidor = int(archivo[:-4])
         x,y = convertir_medidor_a_cord(numMedidor)
         direccion_completa = os.path.join(DIRECTORIO_PREDICCIONES, archivo)
-        print("Leyendo archivo " + direccion_completa)
-
 
         with open(direccion_completa, 'r') as file:
 

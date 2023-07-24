@@ -15,3 +15,4 @@ video_salida.mp4
 .vscode/
 predecir_PAD
 predecir_PAD_MPI
+evaluar_predicciones

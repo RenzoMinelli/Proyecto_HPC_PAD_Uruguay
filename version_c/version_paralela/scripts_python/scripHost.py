@@ -21,7 +21,7 @@ def main():
     # Lista de strings con números entre 20 y 160
     strings = []
     inicio = 'pcunix'
-    fin = '.fing.edu.uy.'
+    fin = '.fing.edu.uy'
     for  i in range(16,145):
        string = inicio + str(i) +fin
        strings.append(string)

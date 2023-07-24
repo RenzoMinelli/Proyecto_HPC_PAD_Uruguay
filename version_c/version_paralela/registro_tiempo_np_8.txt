@@ -1,5 +1,0 @@
-Tiempo de generar_matrices_por_bloques: 71.7871s
-Tiempo de generar_imagenes_fechas_anteriores: 231.815s
-Tiempo de entrenar_modelos_por_bloque: 190.497s
-Tiempo de predecir_por_bloque: 539.497s
-Tiempo de producir_video: 4.13059s

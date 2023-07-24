@@ -312,6 +312,14 @@ int main(int argc, char** argv) {
     std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
     std::chrono::duration<double> elapsed;
 
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::tm* now_tm = std::localtime(&now_time_t);
+    std::stringstream ss;
+    ss << std::put_time(now_tm, "%Y_%m_%d_%H_%M_%S");
+
+    std::string nombre_archivo = "registro_tiempo_" + ss.str() + ".txt";
+
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -340,7 +348,7 @@ int main(int argc, char** argv) {
     if(rank==0) {
         end = std::chrono::high_resolution_clock::now();
         elapsed = end - start;
-        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        std::ofstream file(nombre_archivo, std::ios_base::app);
         file << "Tiempo de generar_matrices_por_bloques: " << elapsed.count() << "s\n";
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
@@ -355,7 +363,7 @@ int main(int argc, char** argv) {
     if(rank==0) {
         end = std::chrono::high_resolution_clock::now();
         elapsed = end - start;
-        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        std::ofstream file(nombre_archivo, std::ios_base::app);
         file << "Tiempo de generar_imagenes_fechas_anteriores: " << elapsed.count() << "s\n";
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
@@ -370,7 +378,7 @@ int main(int argc, char** argv) {
     if(rank==0) {
         end = std::chrono::high_resolution_clock::now();
         elapsed = end - start;
-        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        std::ofstream file(nombre_archivo, std::ios_base::app);
         file << "Tiempo de entrenar_modelos_por_bloque: " << elapsed.count() << "s\n";
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
@@ -385,7 +393,7 @@ int main(int argc, char** argv) {
     if(rank==0) {
         end = std::chrono::high_resolution_clock::now();
         elapsed = end - start;
-        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        std::ofstream file(nombre_archivo, std::ios_base::app);
         file << "Tiempo de predecir_por_bloque: " << elapsed.count() << "s\n";
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
@@ -401,7 +409,7 @@ int main(int argc, char** argv) {
 
         end = std::chrono::high_resolution_clock::now();
         elapsed = end - start;
-        std::ofstream file("registro_tiempo.txt", std::ios_base::app);
+        std::ofstream file(nombre_archivo, std::ios_base::app);
         file << "Tiempo de evaluar_predicciones: " << elapsed.count() << "s\n";
     }
 

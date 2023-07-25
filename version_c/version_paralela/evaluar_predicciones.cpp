@@ -325,6 +325,10 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
+    // instalar requerimientos
+    string command = "python3 -m pip install -r requirements.txt" ;
+    system(command.c_str());
+
     if(rank==0) {
 
         printf("\nSe van a evaluar %d steps\n", steps_a_evaluar);

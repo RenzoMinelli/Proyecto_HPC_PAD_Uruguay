@@ -32,7 +32,7 @@ def evaluar_predicciones(steps_a_evaluar):
         indice += 1
 
     claves = sorted(matrices_valores_reales.keys())
-    promedios = []
+    errores = []
 
     for clave in claves:
         matriz_real = matrices_valores_reales[clave]
@@ -40,11 +40,10 @@ def evaluar_predicciones(steps_a_evaluar):
         diferencia = matriz_real.values - matriz_prediccion.values
         suma = np.sum(diferencia)
         suma = abs(suma)
-        promedio = suma / CANTIDAD_MEDIDORES
-        promedios.append(promedio)
+        errores.append(suma)
 
     # Tracing the averages
-    plt.plot(promedios)
+    plt.plot(errores)
     plt.xlabel('Steps')
     plt.ylabel('Average difference between predictions and real values')
 

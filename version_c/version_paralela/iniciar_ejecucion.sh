@@ -10,4 +10,4 @@ python3 -m pip install -r requirements.txt
 python3 scripts_python/scriptHost.py
 make clean
 make
-mpirun -np $NP --hostfile hosts_conectables.txt ./predecir_PAD_MPI $STEPS 
+mpirun -np $NP --hostfile hosts_conectables.txt ./predecir_PAD_MPI $STEPS

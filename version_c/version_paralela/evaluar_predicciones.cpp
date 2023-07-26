@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
+int generar_matrices_por_bloques(int rank, int size, int steps_para_evaluacion) { // Pronto MPI
 
     string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
     const int num_medidores = 16*16;
@@ -73,7 +73,7 @@ int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
 
    
     // ahora por cada medidor lanzamos un proceso que genere las matrices de bloque de ese medidor
-    pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_bloque.py";  
+    pythonScriptPath = current_working_dir + "/scripts_python/generar_matrices_bloque_evaluacion.py";  
     
     // obtengo la lista filtrada de medidores que si estan en la mascara
     vector<int> medidores_en_mascara;
@@ -93,7 +93,7 @@ int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
     int primerMedidor = i * medidores_por_proceso;
     int ultimoMedidor = min(primerMedidor + medidores_por_proceso, num_medidores_en_mascara);
     for(int j=primerMedidor; j<ultimoMedidor; j++) {
-        string command = "python3 " + pythonScriptPath + " " + to_string(medidores_en_mascara[j]);
+        string command = "python3 " + pythonScriptPath + " " + to_string(medidores_en_mascara[j]) + " " + to_string(steps_para_evaluacion);
         system(command.c_str());
     }
     
@@ -152,7 +152,7 @@ int generar_imagenes_fechas_anteriores(int rank, int size){ // Pronto MPI
     return 0;
 }
 
-int entrenar_modelos_por_bloque(int rank, int size, int steps_a_evaluar){ // Pronto MPI
+int entrenar_modelos_por_bloque(int rank, int size, int steps_a_evaluar, int epochs){ // Pronto MPI
 
 
     // Generamos las imagenes de fechas anteriores 
@@ -176,7 +176,7 @@ int entrenar_modelos_por_bloque(int rank, int size, int steps_a_evaluar){ // Pro
     int firstFile = i * numFilesPerProcess;
     int lastFile = min(firstFile + numFilesPerProcess, static_cast<int>(files.size()));
     for(int j=firstFile; j<lastFile; j++) {
-        string command = "python3 " + pythonScriptPath + " " + files[j] + " " + to_string(steps_a_evaluar);
+        string command = "python3 " + pythonScriptPath + " " + files[j] + " " + to_string(steps_a_evaluar)+ " " + to_string(epochs);
         system(command.c_str());
     }
     
@@ -306,6 +306,10 @@ int main(int argc, char** argv) {
     if(argc > 1){ // se manda el valor de steps a predecir
         steps_a_evaluar = atoi(argv[1]);
     }
+    int epochs = 5;
+    if(argc > 2){ // se manda el valor de epochs
+        epochs = atoi(argv[2]);
+    }
 
     int ret,rank,size ;
     int N = 4;
@@ -342,7 +346,7 @@ int main(int argc, char** argv) {
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
-    ret = generar_matrices_por_bloques(rank, size);
+    ret = generar_matrices_por_bloques(rank, size, steps_a_evaluar);
     if(ret != 0) {
         return ret;
     }
@@ -372,7 +376,7 @@ int main(int argc, char** argv) {
         start = std::chrono::high_resolution_clock::now();  // Reinicia el contador de tiempo para la próxima sección
     }
 
-    ret = entrenar_modelos_por_bloque(rank, size, steps_a_evaluar);
+    ret = entrenar_modelos_por_bloque(rank, size, steps_a_evaluar, epochs);
     if(ret != 0) {
         return ret;
     }

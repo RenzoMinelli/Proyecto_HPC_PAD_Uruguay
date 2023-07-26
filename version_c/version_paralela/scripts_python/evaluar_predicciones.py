@@ -4,6 +4,7 @@ import os
 from config import *
 import sys 
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -46,7 +47,11 @@ def evaluar_predicciones(steps_a_evaluar):
     plt.plot(promedios)
     plt.xlabel('Steps')
     plt.ylabel('Average difference between predictions and real values')
-    plt.show()
+
+    # Saving the plot as an image
+    fecha_hora_actual = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    nombre_imagen = f'grafico_{fecha_hora_actual}.png'
+    plt.savefig(nombre_imagen)
         
 if __name__ == "__main__":
     steps_a_evaluar = int(sys.argv[1])

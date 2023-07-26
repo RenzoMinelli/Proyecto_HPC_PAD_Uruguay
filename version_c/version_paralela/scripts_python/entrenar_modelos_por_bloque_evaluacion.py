@@ -14,7 +14,7 @@ directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 def save_model(model, filename):
     model.save(filename)
 
-def procesar_archivos(archivo, steps_para_evaluacion):
+def procesar_archivos(archivo, steps_para_evaluacion, epochs):
 
     print('Procesando archivo: ' + archivo)
     ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_GENERADAS, archivo)
@@ -47,7 +47,7 @@ def procesar_archivos(archivo, steps_para_evaluacion):
     model = create_model(trainX, trainY)
 
     # fit the model
-    history = model.fit(trainX, trainY, epochs=5, batch_size=16, validation_split=0.1, verbose=1)
+    history = model.fit(trainX, trainY, epochs=epochs, batch_size=16, validation_split=0.1, verbose=1)
 
     nombre_archivo = clave + '.keras'
     save_model(model, directorio_modelos + nombre_archivo) 
@@ -55,4 +55,5 @@ def procesar_archivos(archivo, steps_para_evaluacion):
 if __name__ == "__main__":
     archivo = sys.argv[1]
     steps_para_evaluacion = int(sys.argv[2])
-    procesar_archivos(archivo, steps_para_evaluacion)
+    epochs = int(sys.argv[3])
+    procesar_archivos(archivo, steps_para_evaluacion, epochs)

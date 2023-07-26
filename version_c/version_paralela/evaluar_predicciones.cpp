@@ -273,13 +273,13 @@ int predecir_por_bloque(int rank, int size, int steps){ // Pronto MPI
     return 0;
 }
 
-int evaluar_predicciones(int steps_a_evaluar){
+int evaluar_predicciones(int steps_a_evaluar, int epochs){
     
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
 
-    string pythonScriptPath = current_working_dir + "/scripts_python/evaluar_predicciones.py" + " " + to_string(steps_a_evaluar);
+    string pythonScriptPath = current_working_dir + "/scripts_python/evaluar_predicciones.py" + " " + to_string(steps_a_evaluar) + " " + to_string(epochs);
     string command = "python3 " + pythonScriptPath ;
     system(command.c_str());
 

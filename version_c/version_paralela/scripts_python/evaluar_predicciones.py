@@ -8,7 +8,7 @@ from datetime import datetime
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-def evaluar_predicciones(steps_a_evaluar):
+def evaluar_predicciones(steps_a_evaluar, epochs):
 
     matrices_valores_reales = {}
     directorio_matrices_reales = DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES
@@ -31,12 +31,10 @@ def evaluar_predicciones(steps_a_evaluar):
         matrices_predicciones[indice] = df
         indice += 1
 
-    claves = sorted(matrices_valores_reales.keys())
     errores = []
-
-    for clave in claves:
-        matriz_real = matrices_valores_reales[clave]
-        matriz_prediccion = matrices_predicciones[clave]
+    for i in range(steps_a_evaluar):
+        matriz_real = matrices_valores_reales[i]
+        matriz_prediccion = matrices_predicciones[i]
         diferencia = matriz_real.values - matriz_prediccion.values
         suma = np.sum(diferencia)
         suma = abs(suma)
@@ -44,14 +42,15 @@ def evaluar_predicciones(steps_a_evaluar):
 
     # Tracing the averages
     plt.plot(errores)
-    plt.xlabel('Steps')
-    plt.ylabel('Average difference between predictions and real values')
+    plt.xlabel('Pasos')
+    plt.ylabel('Suma de errores de la prediccion para cada medidor')
 
     # Saving the plot as an image
     fecha_hora_actual = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    nombre_imagen = f'grafico_{fecha_hora_actual}.png'
+    nombre_imagen = f'grafico_epochs_{epochs}_{fecha_hora_actual}.png'
     plt.savefig(nombre_imagen)
         
 if __name__ == "__main__":
     steps_a_evaluar = int(sys.argv[1])
-    evaluar_predicciones(steps_a_evaluar)
+    epochs = int(sys.argv[2])
+    evaluar_predicciones(steps_a_evaluar, epochs)

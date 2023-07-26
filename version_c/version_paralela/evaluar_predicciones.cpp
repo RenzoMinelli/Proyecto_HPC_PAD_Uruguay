@@ -322,12 +322,12 @@ int main(int argc, char** argv) {
     std::stringstream ss;
     ss << std::put_time(now_tm, "%Y_%m_%d_%H_%M_%S");
 
-    std::string nombre_archivo = "registro_tiempo_" + ss.str() + ".txt";
-
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    std::string nombre_archivo = "registro_tiempo_NP_" + to_string(size) + "_" + "EPOCHS_" + to_string(epochs) + "_" + ss.str() + ".txt";
     
     // instalar requerimientos
     string command = "python3 -m pip install -r requirements.txt" ;
@@ -410,7 +410,7 @@ int main(int argc, char** argv) {
     
     if(rank==0)
     {
-        ret = evaluar_predicciones(steps_a_evaluar);
+        ret = evaluar_predicciones(steps_a_evaluar, epochs);
         if(ret != 0) {
             return ret;
         }

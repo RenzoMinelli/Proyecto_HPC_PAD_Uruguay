@@ -40,7 +40,7 @@ def predecir_modelo(archivo):
     num_modelo = archivo[:-6]
     model = load_model(ruta_completa)
     
-    n_past = 14 # cuantos pasos al pasado mirar
+    n_past = PASOS_ATRAS_PARA_PREDICCION # cuantos pasos al pasado mirar
 
     # cargo la training data 
     prediccion = 0

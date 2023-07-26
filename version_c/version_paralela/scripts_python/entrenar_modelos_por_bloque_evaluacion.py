@@ -27,15 +27,12 @@ def procesar_archivos(archivo, steps_para_evaluacion, epochs):
     df_for_training = df_for_training[:-steps_para_evaluacion]
 
     n_future = 1 # cuantos pasos al futuro predecir 
-    n_past = 14 # cuantos pasos al pasado mirar
+    n_past = PASOS_ATRAS_PARA_PREDICCION # cuantos pasos al pasado mirar
     df_for_training = df_for_training.values
 
     #Empty lists to be populated using formatted training data
     trainX = []
     trainY = []
-
-    n_future = 1   # Number of days we want to look into the future based on the past days.
-    n_past = 14  # Number of past days we want to use to predict the future.
 
     pos_a_predecir = 4
     for i in range(n_past, len(df_for_training) - n_future +1):

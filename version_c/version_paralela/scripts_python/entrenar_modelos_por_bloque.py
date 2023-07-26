@@ -22,7 +22,7 @@ def procesar_archivos(archivo):
     df_for_training = df[cols].astype(float)
 
     n_future = 1 # cuantos pasos al futuro predecir 
-    n_past = 14 # cuantos pasos al pasado mirar
+    n_past = PASOS_ATRAS_PARA_PREDICCION # cuantos pasos al pasado mirar
     df_for_training = df_for_training.values
 
     #Empty lists to be populated using formatted training data

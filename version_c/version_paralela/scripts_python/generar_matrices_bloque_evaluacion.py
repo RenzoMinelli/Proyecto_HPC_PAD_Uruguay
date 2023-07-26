@@ -35,7 +35,7 @@ def generar_matrices_bloque(numMedidor, steps_para_evaluacion):
     # Ahora agarramos las matrices y generamos una matriz para cada bloque 2x2
 
     directorio_matrices_bloque = DIRECTORIO_CSVS_MATRICES_GENERADAS
-    cantidad_fuera_del_medidor = 1 # (bloques 3 x 3, o sea 1 central más 1 de cada lado)
+    cantidad_fuera_del_medidor = RADIO_BLOQUE # (bloques 3 x 3, o sea 1 central más 1 de cada lado)
     # entrenamos un modelo por cada medidor, tomando un vecindario de 3x3 para entrenar los modelos
     
     # obtengo los indices de la matriz para ese bloque

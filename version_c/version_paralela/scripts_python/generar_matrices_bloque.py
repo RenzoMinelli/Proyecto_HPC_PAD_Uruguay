@@ -48,8 +48,10 @@ def generar_matrices_bloque(numMedidor):
     matriz = np.zeros((0, ancho_bloque*ancho_bloque + 1))
     matriz = pd.DataFrame(matriz)
 
+    columnas = ['tiempo']
     # definir las columnas
-    columnas = ['tiempo', 'medicion1', 'medicion2', 'medicion3', 'medicion4', 'medicion5', 'medicion6', 'medicion7', 'medicion8', 'medicion9' ]
+    for i in range(ancho_bloque*ancho_bloque):
+        columnas.append('medicion' + str(i+1))    
     matriz.columns = columnas
 
     # obtengo el bloque de cada matriz

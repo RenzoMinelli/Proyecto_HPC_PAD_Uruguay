@@ -12,7 +12,7 @@ directorio_modelos = DIRECTORIO_MODELOS_GENERADOS
 # Directorio donde se guardarán las imágenes
 directorio_guardado = DIRECTORIO_IMAGENES_GENERADADS
 
-cantidad_fuera_del_medidor = 1
+cantidad_fuera_del_medidor = RADIO_BLOQUE
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 cantidadMedidores = 16*16
 tamaño_matriz = TAMAÑO_MATRIZ

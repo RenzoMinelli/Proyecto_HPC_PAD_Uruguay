@@ -7,7 +7,7 @@ from config import *
 import multiprocessing as mp
 import sys
 
-cantidad_fuera_del_medidor = 1
+cantidad_fuera_del_medidor = RADIO_BLOQUE
 ancho_bloque = cantidad_fuera_del_medidor * 2 + 1
 
 def convertir_medidor_a_cord(numMedidor):
@@ -28,8 +28,10 @@ def generar_filas_matriz_por_bloque(archivo, numMedidor):
     matriz = pd.read_csv(ruta_completa_bloque, header=None)
     matriz[0] = pd.to_datetime(matriz[0])
 
+    columnas = ['tiempo']
     # definir las columnas
-    columnas = ['tiempo', 'medicion1', 'medicion2', 'medicion3', 'medicion4', 'medicion5', 'medicion6', 'medicion7', 'medicion8', 'medicion9' ]
+    for i in range(ancho_bloque*ancho_bloque):
+        columnas.append('medicion' + str(i+1)) 
     matriz.columns = columnas
 
     # obtengo los datos del bloque del medidor y armo la fila

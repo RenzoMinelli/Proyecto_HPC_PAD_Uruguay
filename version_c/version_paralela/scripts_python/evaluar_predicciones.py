@@ -36,8 +36,9 @@ def evaluar_predicciones(steps_a_evaluar, epochs):
         matriz_real = matrices_valores_reales[i]
         matriz_prediccion = matrices_predicciones[i]
         diferencia = matriz_real.values - matriz_prediccion.values
+        # aplicar abs a toda la matriz
+        diferencia = np.abs(diferencia)
         suma = np.sum(diferencia)
-        suma = abs(suma)
         errores.append(suma)
 
     # Tracing the averages

@@ -23,7 +23,7 @@ def generar_matrices_bloque(numMedidor):
             anio = clave[0:4]
             mes = clave[5:-1]
             trimestre = clave[-1:]
-            if mes == '02':
+            if mes == '02' and trimestre == '3':
                 dia = '28'
             else:
                 dia = trimestre + '0'

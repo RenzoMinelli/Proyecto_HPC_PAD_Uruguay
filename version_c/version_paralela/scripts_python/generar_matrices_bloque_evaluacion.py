@@ -15,7 +15,7 @@ def generar_matrices_bloque(numMedidor, steps_para_evaluacion):
     # cargamos las matrices de los csvs
     matrices = {}
     for archivo in os.listdir(DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES):
-        if archivo.endswith(".csv"):
+            
             ruta_completa = os.path.join(DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES, archivo)
             df = pd.read_csv(ruta_completa, header=None)
             clave = archivo.split('.')[0]
@@ -23,7 +23,7 @@ def generar_matrices_bloque(numMedidor, steps_para_evaluacion):
             anio = clave[0:4]
             mes = clave[5:-1]
             trimestre = clave[-1:]
-            if mes == '02':
+            if mes == '02' and trimestre == '3':
                 dia = '28'
             else:
                 dia = trimestre + '0'

@@ -29,9 +29,6 @@ def procesar_archivos(archivo):
     trainX = []
     trainY = []
 
-    n_future = 1   # Number of days we want to look into the future based on the past days.
-    n_past = 14  # Number of past days we want to use to predict the future.
-
     pos_a_predecir = 4
     for i in range(n_past, len(df_for_training) - n_future +1):
         trainX.append(df_for_training[i - n_past:i, 0:df_for_training.shape[1]])

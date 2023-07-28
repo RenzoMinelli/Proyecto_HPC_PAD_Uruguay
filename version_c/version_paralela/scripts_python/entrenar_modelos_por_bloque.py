@@ -29,7 +29,8 @@ def procesar_archivos(archivo):
     trainX = []
     trainY = []
 
-    pos_a_predecir = 4
+    ancho_bloque = RADIO_BLOQUE * 2 + 1
+    pos_a_predecir = int((ancho_bloque^2 - 1) / 2)
     for i in range(n_past, len(df_for_training) - n_future +1):
         trainX.append(df_for_training[i - n_past:i, 0:df_for_training.shape[1]])
         trainY.append(df_for_training[i + n_future - 1:i + n_future, pos_a_predecir])

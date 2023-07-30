@@ -45,7 +45,7 @@ def procesar_archivos(archivo, steps_para_evaluacion, epochs):
     model = create_model(trainX, trainY)
 
     # fit the model
-    history = model.fit(trainX, trainY, epochs=epochs, batch_size=16, validation_split=0.1, verbose=1)
+    history = model.fit(trainX, trainY, epochs=epochs, batch_size=16, verbose=1)
 
     nombre_archivo = clave + '.keras'
     save_model(model, directorio_modelos + nombre_archivo) 

@@ -19,13 +19,9 @@ using namespace std;
 
 int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
 
-    string DIRECTORIO_CSVS_MATRICES_POR_FECHA_ANTERIORES = "matrices_por_fecha_anteriores";
-    const int num_medidores = 16*16;
     char cwd[1024];
     getcwd(cwd, sizeof(cwd));
     string current_working_dir(cwd);
-
-
 
     const int mascara[16][16] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},

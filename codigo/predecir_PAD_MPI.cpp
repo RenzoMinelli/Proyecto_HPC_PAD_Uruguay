@@ -15,8 +15,6 @@
 
 using namespace std;
 
-
-
 int generar_matrices_por_bloques(int rank, int size) { // Pronto MPI
 
     char cwd[1024];
@@ -285,19 +283,6 @@ int producir_video(){
 
 
 };
-
-
-void imprimir_listas(std::vector<std::vector<std::string>> listas){
-    // Mostrar los nombres de archivos en cada lista
-    int N = listas.size();
-    for (int i = 0; i < N; ++i) {
-        std::cout << "Lista " << i + 1 << ": ";
-        for (const std::string& nombre : listas[i]) {
-            std::cout << nombre << " ";
-        }
-        std::cout << std::endl;
-    }
-}
 
 int preparar_ambiente(){
     char cwd[1024];

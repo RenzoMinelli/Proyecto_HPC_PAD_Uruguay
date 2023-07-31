@@ -1,0 +1,15 @@
+# Como ejecutar en ambiente local
+
+Ejecutamos los comandos:
+
+`make`
+`mpirun -np NUMERO_PROCESOS ./predecir_PAD_MPI NUMERO_STEPS_A_PREDECIR`
+
+# Ejecutar en ambiente de PCUNIX Fing
+
+Ejecutamos el script:
+
+`./iniciar_ejecucion.sh NUMERO_PROCESOS NUMERO_STEPS_A_PREDECIR`
+
+Este script se encargará de obtener los hosts disponibles para correr el programa y luego llamará a mpirun con los 
+parámetros indicados
